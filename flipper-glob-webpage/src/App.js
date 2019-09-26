@@ -1,26 +1,43 @@
-import React from 'react';
+import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      currentCount: 0
+    }
+  }
+  
+  
+  render() {
+    return (
+      <div className='app'>
+        <header>
+            <div className='wrapper'>
+              <h1>Flipper Glob</h1>
+              
+            </div>
+        </header>
+        <div className='container'>
+          <section className='display-count'>
+              <form>
+                <h3>The number of people in the Hoch is:</h3>
+                <h1>{this.state.currentCount}</h1>
+                <button>Increment</button>
+                <button>Decrement</button>
+              </form>
+          </section>
+          <section className='display-item'>
+            <div className='wrapper'>
+              <ul>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  }
 }
-
 export default App;
