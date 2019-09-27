@@ -7,19 +7,32 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      //population counter, initially set to 0
+      //population counter
       currentCount: 0,
-      time: new Date().toLocaleString()
+      //we must use new Date() to create a new object and avoid some weird errors
+      //I don't exactly know why though
+      time: new Date()
+
     }
     //binds the handleSubmit() function to all buttons to update the databse
     //on each click of every button
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  // called every second - will be used to log history
   tick() {
     this.setState({
-      time: new Date().toLocaleString()
+      time: new Date()
     });
+    if(this.state.time.getSeconds() === 0)
+    {
+      const database = firebase.database().ref('history');
+      const entry = {
+        value: this.state.currentCount,
+        timestamp: this.state.time
+      }
+      database.update(entry);
+    }
   }
 
   handleIncrement() {
@@ -56,6 +69,7 @@ class App extends Component {
     // writes that value to currentCount
     this.setState({ currentCount: snapshot.val().value });
 
+    // calls this.tick() every 1000 ms (every 1 second)
     this.intervalID = setInterval(() => this.tick(), 1000);
   });
   }
@@ -74,7 +88,8 @@ class App extends Component {
                 <h3>The number of people in the Hoch is:</h3>
                 {/* loads the value of currentCount */}
                 <h1>{this.state.currentCount}</h1>
-                <h3>The time is {this.state.time}</h3>
+                {/* toLocaleString() is a function that formats the time*/}
+                <h3>The time is {this.state.time.toLocaleString()}</h3>
                 {/* Assigns a function to be called on the button press IN ADDITION
                     to handleSubmit */}
                 <button onClick={() => this.handleIncrement()}>Increment</button>
