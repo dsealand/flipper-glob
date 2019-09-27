@@ -8,12 +8,18 @@ class App extends Component {
     super();
     this.state = {
       //population counter, initially set to 0
-      currentCount: 0
+      currentCount: 0,
+      time: new Date().toLocaleString()
     }
-
     //binds the handleSubmit() function to all buttons to update the databse
     //on each click of every button
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  tick() {
+    this.setState({
+      time: new Date().toLocaleString()
+    });
   }
 
   handleIncrement() {
@@ -49,6 +55,8 @@ class App extends Component {
     database.ref('count').once('value', (snapshot) => {
     // writes that value to currentCount
     this.setState({ currentCount: snapshot.val().value });
+
+    this.intervalID = setInterval(() => this.tick(), 1000);
   });
   }
 
@@ -66,6 +74,7 @@ class App extends Component {
                 <h3>The number of people in the Hoch is:</h3>
                 {/* loads the value of currentCount */}
                 <h1>{this.state.currentCount}</h1>
+                <h3>The time is {this.state.time}</h3>
                 {/* Assigns a function to be called on the button press IN ADDITION
                     to handleSubmit */}
                 <button onClick={() => this.handleIncrement()}>Increment</button>
