@@ -31,7 +31,7 @@ class App extends Component {
         value: this.state.currentCount,
         timestamp: this.state.time
       }
-      database.update(entry);
+      database.push(entry);
     }
   }
 
