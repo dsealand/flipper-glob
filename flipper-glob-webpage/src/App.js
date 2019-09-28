@@ -86,22 +86,52 @@ class App extends Component {
     // It only allows one orderBy ise per function call
     // Or we'll just have to be smart about our limitTo calls and include smart if statements
     // Currently only pulls database values from the same weekday
+    /*
+    * Implementation: The following code pulls the history from previous days and averages
+    *                 the values before putting it in the history
+    * Current Limitations: Only looks at current hour, needs large history or is useless
+    */
     database.ref('history').orderByChild("weekday").equalTo(this.state.time.getDay().toString())
-            .limitToLast(20).on('value', (snapshot) => {
+            .on('value', (snapshot) => {
       let elements = snapshot.val();
-      // Loops through every element passed - to change number of entries use limitToFirst()
-      // or limitToLast() in the database.ref line
-      for(let element in elements)
-      {
-        if(elements[element].minute % 2 === 0){ // Way to limit the entries to only even times
+      // Pulls elements by minute count in intervals of 5 minutes
+      for(let i = 0; i < 60; i += 5){
+        let numElements = 0;
+        let value = 0;
+        let hour = 0;
+        // Loops through every element passed - to change number of entries use limitToFirst()
+        // or limitToLast() in the database.ref line
+        for(let element in elements)
+        {
+          hour = elements[element].hour;
+          if(elements[element].minute === i)
+          {
+            ++numElements;
+            value += elements[element].value;
+          }
+          /* Code to push every element - outdated
+          if(elements[element].minute % 2 === 0){ // Way to limit the entries to only even times
+            newHistory.push({
+              pastCount: elements[element].value,
+              hour: elements[element].hour,
+              minute: elements[element].minute
+            });
+          }
+          */
+        }
+        // Only push to history if there is an associated value
+        if(numElements > 0)
+        {
+          //newHistory.pop(); //Used for testing purposes
           newHistory.push({
-            pastCount: elements[element].value,
-            hour: elements[element].hour,
-            minute: elements[element].minute
+            pastCount: value / numElements,
+            hour: hour,
+            minute: i
           });
         }
       }
     });
+    // Updates the actual history that will be displayed
     this.setState({
       history: newHistory
     });
@@ -121,6 +151,7 @@ class App extends Component {
                 <h3>The number of people in the Hoch is:</h3>
                 {/* loads the value of currentCount */}
                 <h1>{this.state.currentCount}</h1>
+                <h1>{this.state.time.toUTCString()}</h1>
                 {/* Assigns a function to be called on the button press IN ADDITION
                     to handleSubmit */}
                 <button onClick={() => this.handleIncrement()}>Increment</button>
