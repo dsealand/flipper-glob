@@ -11,8 +11,8 @@ class App extends Component {
       currentCount: 0,
       //we must use new Date() to create a new object and avoid some weird errors
       //I don't exactly know why though
-      time: new Date()
-
+      time: new Date(),
+      history: []
     }
     //binds the handleSubmit() function to all buttons to update the databse
     //on each click of every button
@@ -29,7 +29,9 @@ class App extends Component {
       const database = firebase.database().ref('history');
       const entry = {
         value: this.state.currentCount,
-        timestamp: this.state.time
+        weekday: this.state.time.getDay().toString(),
+        hour: this.state.time.getHours().toString(),
+        minute: this.state.time.getMinutes().toString()
       }
       database.push(entry);
     }
@@ -64,14 +66,45 @@ class App extends Component {
   componentDidMount() {
     // connects to the database
     const database = firebase.database();
+
     // pulls data once from the section titled "count" and its child titled "value"
     database.ref('count').once('value', (snapshot) => {
     // writes that value to currentCount
     this.setState({ currentCount: snapshot.val().value });
+    });
 
     // calls this.tick() every 1000 ms (every 1 second)
+    // sets up the clock function
     this.intervalID = setInterval(() => this.tick(), 1000);
-  });
+
+    // pull in the history
+    let newHistory = [];
+    // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
+    // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
+    // .orderByChild(" -- name of category -- ") sorts by that value 
+    // Note: we might need to create multiple of the following calls to parse the data
+    // It only allows one orderBy ise per function call
+    // Or we'll just have to be smart about our limitTo calls and include smart if statements
+    // Currently only pulls database values from the same weekday
+    database.ref('history').orderByChild("weekday").equalTo(this.state.time.getDay().toString())
+            .limitToLast(20).on('value', (snapshot) => {
+      let elements = snapshot.val();
+      // Loops through every element passed - to change number of entries use limitToFirst()
+      // or limitToLast() in the database.ref line
+      for(let element in elements)
+      {
+        if(elements[element].minute % 2 === 0){ // Way to limit the entries to only even times
+          newHistory.push({
+            pastCount: elements[element].value,
+            hour: elements[element].hour,
+            minute: elements[element].minute
+          });
+        }
+      }
+    });
+    this.setState({
+      history: newHistory
+    });
   }
 
   render() {
@@ -88,8 +121,6 @@ class App extends Component {
                 <h3>The number of people in the Hoch is:</h3>
                 {/* loads the value of currentCount */}
                 <h1>{this.state.currentCount}</h1>
-                {/* toLocaleString() is a function that formats the time*/}
-                <h3>The time is {this.state.time.toLocaleString()}</h3>
                 {/* Assigns a function to be called on the button press IN ADDITION
                     to handleSubmit */}
                 <button onClick={() => this.handleIncrement()}>Increment</button>
@@ -97,11 +128,21 @@ class App extends Component {
                 <button onClick={() => this.handleReset()}>Reset</button>
               </form>
           </section>
-          <section className='display-item'>
-            <div className='wrapper'>
-              <ul>
-              </ul>
-            </div>
+          <section className='display-history'>
+              <li>
+                <h1>History</h1>
+                {this.state.history.map((element) => {
+                  return (
+                    <li key = {element.id}>
+                      {/* pulls from the history and displays it with style h4 (see App.css for format)*/}
+                      {/* the ? lines are used for formating the time */}
+                      <h4>{element.hour === 12 ? 12: element.hour%12}:
+                          {element.minute > 9 ? element.minute : '0'+element.minute} Pop: {element.pastCount}
+                      </h4>
+                      </li>
+                  )
+                })}
+              </li>
           </section>
         </div>
       </div>
