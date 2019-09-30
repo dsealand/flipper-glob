@@ -24,6 +24,7 @@ class App extends Component {
     this.setState({
       time: new Date()
     });
+    // Every minute, create a new object and push it to the database
     if(this.state.time.getSeconds() === 0)
     {
       const database = firebase.database().ref('history');
@@ -67,6 +68,7 @@ class App extends Component {
     // connects to the database
     const database = firebase.database();
 
+    // Loads the current database value into currentCount
     // pulls data once from the section titled "count" and its child titled "value"
     database.ref('count').once('value', (snapshot) => {
     // writes that value to currentCount
@@ -109,15 +111,6 @@ class App extends Component {
             ++numElements;
             value += elements[element].value;
           }
-          /* Code to push every element - outdated
-          if(elements[element].minute % 2 === 0){ // Way to limit the entries to only even times
-            newHistory.push({
-              pastCount: elements[element].value,
-              hour: elements[element].hour,
-              minute: elements[element].minute
-            });
-          }
-          */
         }
         // Only push to history if there is an associated value
         if(numElements > 0)
@@ -165,8 +158,8 @@ class App extends Component {
                 {this.state.history.map((element) => {
                   return (
                     <li key = {element.id}>
-                      {/* pulls from the history and displays it with style h4 (see App.css for format)*/}
-                      {/* the ? lines are used for formating the time */}
+                      {/* pulls from the history and displays it with style h4 (see App.css for format)*/
+                       /* the ? lines are used for formating the time */}
                       <h4>{element.hour === 12 ? 12: element.hour%12}:
                           {element.minute > 9 ? element.minute : '0'+element.minute} Pop: {element.pastCount}
                       </h4>
