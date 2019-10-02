@@ -8,7 +8,6 @@ npm install -g create-react-app
 yarn add firebase --dev
 npm install -g firebase-tools
 npm install react-router-dom
-npm install registerServiceWorker
 
 ##########
 
