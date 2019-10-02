@@ -31,7 +31,8 @@ export default class Home extends React.Component {
             value: this.state.currentCount,
             weekday: this.state.time.getDay().toString(),
             hour: this.state.time.getHours().toString(),
-            minute: ((this.state.time.getMinutes()+5)%60).toString()
+            minute: ((this.state.time.getMinutes()+5)%60).toString(),
+            meal: this.getMeal()
           }
           database.push(entry);
         }
@@ -106,6 +107,7 @@ export default class Home extends React.Component {
             if(i < this.state.time.getMinutes()) { continue;}
             let numElements = 0;
             let value = 0;
+            let currMeal;
             let hour = this.state.time.getHours();
             // Loops through every element passed - to change number of entries use limitToFirst()
             // or limitToLast() in the database.ref line
@@ -113,6 +115,7 @@ export default class Home extends React.Component {
               if(elements[element].minute === i) {
                 ++numElements;
                 value += elements[element].value;
+                currMeal = elements[element].meal;
               }
             }
             // Only push to history if there is an associated value
@@ -121,15 +124,33 @@ export default class Home extends React.Component {
               newHistory.push({
                 pastCount: value / numElements,
                 hour: hour,
-                minute: i
+                minute: i,
+                meal: currMeal
               });
             }
           }
           // Updates the actual history that will be displayed
           this.setState({
-          history: newHistory
+            history: newHistory
           });
         });
+      }
+
+      getMeal() {
+        if(this.state.time.getDay() === 0 || this.state.time.getDay() === 6)
+        {
+          if(this.state.time.getHours < 14) {
+            return "brunch";
+          }
+          return "dinner";
+        }
+        else if (this.state.time.getHours < 11) {
+          return "breakfast";
+        }
+        else if (this.state.time.getHours < 15) {
+          return "lunch";
+        }
+        return "dinner";
       }
     
       render() {
