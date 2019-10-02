@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+import {Route} from 'react-router-dom'
+
+import Home from './Component/Home';
+import About from './Component/About';
+import Navigation from './Component/Navigation'
+
 import './App.css';
 import firebase from './firebase.js';
 
@@ -135,45 +141,55 @@ class App extends Component {
 
   render() {
     return (
-      <div className='app'>
-        <header>
-            <div className='wrapper'>
-              <h1>Flipper Glob</h1>
-            </div>
-        </header>
-        <div className='container'>
-          <section className='display-count'>
-              <form onSubmit={this.handleSubmit}>
-                <h3>The number of people in the Hoch is:</h3>
-                {/* loads the value of currentCount */}
-                <h1>{this.state.currentCount}</h1>
-                <h1>{this.state.time.toUTCString()}</h1>
-                {/* Assigns a function to be called on the button press IN ADDITION
-                    to handleSubmit */}
-                <button onClick={() => this.handleIncrement()}>Increment</button>
-                <button onClick={() => this.handleDecrement()}>Decrement</button>
-                <button onClick={() => this.handleReset()}>Reset</button>
-              </form>
-          </section>
-          <section className='display-history'>
-              <li>
-                <h1>History</h1>
-                {this.state.history.map((element) => {
-                  return (
-                    <li key = {element.id}>
-                      {/* pulls from the history and displays it with style h4 (see App.css for format)*/
-                       /* the ? lines are used for formating the time */}
-                      <h4>{element.hour === 12 ? 12: element.hour%12}:
-                          {element.minute > 9 ? element.minute : '0'+element.minute} Pop: {Math.floor(element.pastCount)}
-                      </h4>
-                      </li>
-                  )
-                })}
-              </li>
-          </section>
-        </div>
+      <div>
+        <Navigation/>
+        {
+
+        }
+        <Route exact = {true} path = {'/'} component = {Home} />
+        <Route exact = {true} path = {'/about'} component = {About} />
       </div>
     );
+    // return (
+    //   <div className='app'>
+    //     <header>
+    //         <div className='wrapper'>
+    //           <h1>Flipper Glob</h1>
+    //         </div>
+    //     </header>
+    //     <div className='container'>
+    //       <section className='display-count'>
+    //           <form onSubmit={this.handleSubmit}>
+    //             <h3>The number of people in the Hoch is:</h3>
+    //             {/* loads the value of currentCount */}
+    //             <h1>{this.state.currentCount}</h1>
+    //             <h1>{this.state.time.toUTCString()}</h1>
+    //             {/* Assigns a function to be called on the button press IN ADDITION
+    //                 to handleSubmit */}
+    //             <button onClick={() => this.handleIncrement()}>Increment</button>
+    //             <button onClick={() => this.handleDecrement()}>Decrement</button>
+    //             <button onClick={() => this.handleReset()}>Reset</button>
+    //           </form>
+    //       </section>
+    //       <section className='display-history'>
+    //           <li>
+    //             <h1>History</h1>
+    //             {this.state.history.map((element) => {
+    //               return (
+    //                 <li key = {element.id}>
+    //                   {/* pulls from the history and displays it with style h4 (see App.css for format)*/
+    //                    /* the ? lines are used for formating the time */}
+    //                   <h4>{element.hour === 12 ? 12: element.hour%12}:
+    //                       {element.minute > 9 ? element.minute : '0'+element.minute} Pop: {Math.floor(element.pastCount)}
+    //                   </h4>
+    //                   </li>
+    //               )
+    //             })}
+    //           </li>
+    //       </section>
+    //     </div>
+    //   </div>
+    // );
   }
 }
 
