@@ -25,14 +25,13 @@ class App extends Component {
       time: new Date()
     });
     // Every minute, create a new object and push it to the database
-    if(this.state.time.getSeconds() % 5 === 0)
+    if(this.state.time.getSeconds() === 0)
     {
       const database = firebase.database().ref('history');
       const entry = {
         value: this.state.currentCount,
         weekday: this.state.time.getDay().toString(),
         hour: this.state.time.getHours().toString(),
-        // Currently pushes 5 minutes ahead to observe the behavior in the history
         minute: ((this.state.time.getMinutes()+5)%60).toString()
       }
       database.push(entry);
@@ -79,6 +78,7 @@ class App extends Component {
     // sets up the clock function
     this.intervalID = setInterval(() => this.tick(), 1000);
 
+    // Reads from the database and updates this.state.history
     this.loadHistory();
   }
 
@@ -105,17 +105,17 @@ class App extends Component {
       for(let i = 0; i < 60; i += 5){
         // First attempt at filtering past times
         if(i < this.state.time.getMinutes()) { continue;}
-          let numElements = 0;
-          let value = 0;
-          let hour = this.state.time.getHours();
-          // Loops through every element passed - to change number of entries use limitToFirst()
-          // or limitToLast() in the database.ref line
-          for(let element in elements) {
-            if(elements[element].minute === i) {
-              ++numElements;
-              value += elements[element].value;
-            }
+        let numElements = 0;
+        let value = 0;
+        let hour = this.state.time.getHours();
+        // Loops through every element passed - to change number of entries use limitToFirst()
+        // or limitToLast() in the database.ref line
+        for(let element in elements) {
+          if(elements[element].minute === i) {
+            ++numElements;
+            value += elements[element].value;
           }
+        }
         // Only push to history if there is an associated value
         if(numElements > 0) {
           //newHistory.pop(); //Used for testing purposes
