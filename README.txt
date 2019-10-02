@@ -7,6 +7,8 @@ You must run the following lines before using yarn start to run the webpage
 npm install -g create-react-app
 yarn add firebase --dev
 npm install -g firebase-tools
+npm install react-router-dom
+npm install registerServiceWorker
 
 ##########
 

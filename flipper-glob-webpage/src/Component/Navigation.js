@@ -8,17 +8,17 @@ const Navigation = () => {
     return (
         <nav className = {'deep-purple darken-1'}>
             <div className = {'nav-wrapper'}>
-                <ul className = {'left'}>
-                    <li>
+                <ul>
+                    <section className = {'nav-Bar'}>
                         <Link to = {'/'}>
                             <a className = {'white-text'}>Home</a>
                         </Link>
-                    </li>
-                    <li>
+                        {/* nbsp = non breaking space - for formating */}
+                        &nbsp;&nbsp;&nbsp;&nbsp;
                         <Link to = {'/about'}>
                             <a className = {'white-text'}>About</a>
                         </Link>
-                    </li>
+                    </section>
                 </ul>
             </div>
         </nav>
