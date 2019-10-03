@@ -7,14 +7,19 @@ You must run the following lines before using yarn start to run the webpage
 npm install -g create-react-app
 yarn add firebase --dev
 npm install -g firebase-tools
-npm install react-router-dom
+npm install react-router-dom      // this might not be needed
+yarn global add firebase-tools
+yarn global add moment
+yarn global add moment-timezone
 
 ##########
 
 ##### Note for Deploy Firebase Hosting #####
-Andreas needs to look into this more but google gave me the lines
 firebase login
 firebase init
+	Choose Hosting: Configure and deploy Firebase Hosting Sites
+	What do ou want to use as your public directory? build
+	Configure as a single-page app? Yes
+	File build/index.html already exists. Overwrite? No
 firebase deploy
-Seems like a good start
 ##########

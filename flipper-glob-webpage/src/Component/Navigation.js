@@ -10,14 +10,20 @@ const Navigation = () => {
             <div className = {'nav-wrapper'}>
                 <ul>
                     <section className = {'nav-Bar'}>
-                        <Link to = {'/'}>
-                            <a className = {'white-text'}>Home</a>
-                        </Link>
+                        <button>
+                            <Link to = {'/'}>
+                                <a className = {'white-text'}>Home</a>
+                            </Link>
+                        </button>
+                        
                         {/* nbsp = non breaking space - for formating */}
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <Link to = {'/about'}>
-                            <a className = {'white-text'}>About</a>
-                        </Link>
+                        <button>
+                            <Link to = {'/about'}>
+                                <a className = {'white-text'}>About</a>
+                            </Link>
+                        </button>
+                        
                     </section>
                 </ul>
             </div>
