@@ -16,10 +16,13 @@ yarn global add moment-timezone
 
 ##### Note for Deploy Firebase Hosting #####
 firebase login
+yarn build
 firebase init
 	Choose Hosting: Configure and deploy Firebase Hosting Sites
 	What do ou want to use as your public directory? build
 	Configure as a single-page app? Yes
 	File build/index.html already exists. Overwrite? No
+firebase use --add
+	name it whatever you want
 firebase deploy
 ##########
