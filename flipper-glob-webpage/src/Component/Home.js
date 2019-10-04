@@ -36,6 +36,11 @@ export default class Home extends React.Component {
       //     // hour: this.state.time.hours(),
       //     // minute: this.state.time.minutes(),
       //     // meal: this.getMeal()
+      //     // value: this.state.currentCount,
+      //     // weekday: 0,
+      //     // hour: 12,
+      //     // minute: 45,
+      //     // meal: "brunch"
       //   }
       //   database.push(entry);
       // }
@@ -90,7 +95,7 @@ export default class Home extends React.Component {
     pullBreakfastHistory() {
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
         let hist = snapshot.val();
         // Creates an array for each 5 minute interval over the 2 hours
         let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -131,7 +136,7 @@ export default class Home extends React.Component {
     pullBrunchHistory() {
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
         let hist = snapshot.val();
         // Creates an array for each 5 minute interval over the 2 hours
         let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -172,7 +177,7 @@ export default class Home extends React.Component {
     pullLunchHistory() {
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
         let hist = snapshot.val();
         // Lunch is only open for 1.75 hours, so we can have a shorter array
         let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -301,8 +306,8 @@ export default class Home extends React.Component {
                   <li key = {element.id}>
                     {/* pulls from the history and displays it with style h4 (see App.css for format)*/
                       /* the ? lines are used for formating the time */}
-                    <h4>At: {element.hour === 12 ? 12: element.hour%12}:
-                        {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; Pop: {Math.floor(element.pastCount)}
+                    <h4>Time: {element.hour === 12 ? 12: element.hour%12}:
+                        {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; Avg Pop: {Math.floor(element.pastCount)}
                     </h4>
                     </li>
                 )

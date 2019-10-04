@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Route,Link} from 'react-router-dom';
 import Home from './Home';
-import About from './About';
+import HistoryPage from './HistoryPage';
 
 
 const Navigation = () => {
@@ -19,8 +19,8 @@ const Navigation = () => {
                         {/* nbsp = non breaking space - for formating */}
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <button>
-                            <Link to = {'/about'}>
-                                <a className = {'white-text'}>About</a>
+                            <Link to = {'/historyPage'}>
+                                <a className = {'white-text'}>History</a>
                             </Link>
                         </button>
                         
