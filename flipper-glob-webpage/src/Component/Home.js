@@ -14,8 +14,8 @@ export default class Home extends React.Component {
           // using moment library to set timezone to LA
           time: moment().tz('America/Los_Angeles')
         }
-        //binds the handleSubmit() function to all buttons to update the databse
-        //on each click of every button
+        //binds the handleSubmit() function to all buttons with the appropriate <form>
+        //tag in the render section
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     
@@ -23,7 +23,7 @@ export default class Home extends React.Component {
     tick() {
       this.setState({
         time: moment().tz('America/Los_Angeles')
-      });
+    });
       
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
@@ -96,39 +96,39 @@ export default class Home extends React.Component {
       const database = firebase.database();
       let newHistory = [];
       database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
-        let hist = snapshot.val();
-        // Creates an array for each 5 minute interval over the 2 hours
-        let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        // Loops through every element that has the same day as today
-        for(let entry in hist) {
-          if(hist[entry].meal === "breakfast") {
-            // Store entries into the array based on the time
-            if(hist[entry].hour === 7) {
-              sums[(hist[entry].minute - 30) / 5] += hist[entry].value;
-              ++numElements[(hist[entry].minute - 30) / 5];
-            }
-            else if(hist[entry].hour === 8) {
-              sums[hist[entry].minute/5 + 6] += hist[entry].value;
-              ++numElements[hist[entry].minute/5 + 6];
-            }
-            else {
-              sums[hist[entry].minute/5 + 18] += hist[entry].value;
-              ++numElements[hist[entry].minute/5 + 18];
-            }
+          let hist = snapshot.val();
+          // Creates an array for each 5 minute interval over the 2 hours
+          let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          // Loops through every element that has the same day as today
+          for(let entry in hist) {
+              if(hist[entry].meal === "breakfast") {
+                  // Store entries into the array based on the time
+                  if(hist[entry].hour === 7) {
+                  sums[(hist[entry].minute - 30) / 5] += hist[entry].value;
+                  ++numElements[(hist[entry].minute - 30) / 5];
+                  }
+                  else if(hist[entry].hour === 8) {
+                  sums[hist[entry].minute/5 + 6] += hist[entry].value;
+                  ++numElements[hist[entry].minute/5 + 6];
+                  }
+                  else {
+                  sums[hist[entry].minute/5 + 18] += hist[entry].value;
+                  ++numElements[hist[entry].minute/5 + 18];
+                  }
+              }
           }
-        }
-        // Push elements into the newHistory array which will be used to update the website
-        for(let i = 0; i < 24; ++i)
-        {
-          newHistory.push({
-            pastCount: sums[i] / numElements[i],
-            // Uses if statements to write the correct hour value
-            hour: (i < 6) ? 7 : (i < 18 ? 8 : 9),
-            minute: (i*5) % 60,
-            meal: "breakfast"
-          });
-        }
+          // Push elements into the newHistory array which will be used to update the website
+          for(let i = 0; i < 24; ++i)
+          {
+              newHistory.push({
+                  pastCount: sums[i] / numElements[i],
+                  // Uses if statements to write the correct hour value
+                  hour: (i < 6) ? 7 : (i < 18 ? 8 : 9),
+                  minute: (i*5) % 60,
+                  meal: "breakfast"
+              });
+          }
       });
       return newHistory;
     }
@@ -137,74 +137,73 @@ export default class Home extends React.Component {
       const database = firebase.database();
       let newHistory = [];
       database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
-        let hist = snapshot.val();
-        // Creates an array for each 5 minute interval over the 2 hours
-        let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        // Loops through every element that has the same day as today
-        for(let entry in hist) {
-          if(hist[entry].meal === "brunch") {
-            // Store entries into the array based on the time
-            if(hist[entry].hour === 10) {
-              sums[(hist[entry].minute - 30) / 5] += hist[entry].value;
-              ++numElements[(hist[entry].minute - 30) / 5];
-            }
-            else if(hist[entry].hour === 11) {
-              sums[hist[entry].minute/5 + 6] += hist[entry].value;
-              ++numElements[hist[entry].minute/5 + 6];
-            }
-            else {
-              sums[hist[entry].minute/5 + 18] += hist[entry].value;
-              ++numElements[hist[entry].minute/5 + 18];
-            }
+          let hist = snapshot.val();
+          // Creates an array for each 5 minute interval over the 2 hours
+          let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          // Loops through every element that has the same day as today
+          for(let entry in hist) {
+              if(hist[entry].meal === "brunch") {
+                  // Store entries into the array based on the time
+                  if(hist[entry].hour === 10) {
+                  sums[(hist[entry].minute - 30) / 5] += hist[entry].value;
+                  ++numElements[(hist[entry].minute - 30) / 5];
+                  }
+                  else if(hist[entry].hour === 11) {
+                  sums[hist[entry].minute/5 + 6] += hist[entry].value;
+                  ++numElements[hist[entry].minute/5 + 6];
+                  }
+                  else {
+                  sums[hist[entry].minute/5 + 18] += hist[entry].value;
+                  ++numElements[hist[entry].minute/5 + 18];
+                  }
+              }
           }
-        }
-        // Push elements into the newHistory array which will be used to update the website
-        for(let i = 0; i < 27; ++i)
-        {
-          newHistory.push({
-            pastCount: sums[i] / numElements[i],
-            // Uses if statements to write the correct hour value
-            hour: (i < 6) ? 10 : (i < 18 ? 11 : 12),
-            minute: (i*5) % 60,
-            meal: "brunch"
-          });
-        }
+          // Push elements into the newHistory array which will be used to update the website
+          for(let i = 0; i < 27; ++i)
+          {
+              newHistory.push({
+                  pastCount: sums[i] / numElements[i],
+                  // Uses if statements to write the correct hour value
+                  hour: (i < 6) ? 10 : (i < 18 ? 11 : 12),
+                  minute: (30 + i*5) % 60,
+                  meal: "brunch"
+              });
+          }
       });
-      return newHistory;
+    return newHistory;
     }
 
     pullLunchHistory() {
       const database = firebase.database();
       let newHistory = [];
       database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
-        let hist = snapshot.val();
-        // Lunch is only open for 1.75 hours, so we can have a shorter array
-        let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        for(let entry in hist) {
-          if(hist[entry].meal === "lunch") {
-            if(hist[entry].hour === 11) {
-              sums[(hist[entry].minute - 15) / 5] += hist[entry].value;
-              ++numElements[(hist[entry].minute - 15) / 5];
-            }
-            else {
-              sums[hist[entry].minute/5 + 9] += hist[entry].value;
-              ++numElements[hist[entry].minute/5 + 9];
-            }
+          let hist = snapshot.val();
+          // Lunch is only open for 1.75 hours, so we can have a shorter array
+          let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          for(let entry in hist) {
+              if(hist[entry].meal === "lunch") {
+                  if(hist[entry].hour === 11) {
+                  sums[(hist[entry].minute - 15) / 5] += hist[entry].value;
+                  ++numElements[(hist[entry].minute - 15) / 5];
+                  }
+                  else {
+                  sums[hist[entry].minute/5 + 9] += hist[entry].value;
+                  ++numElements[hist[entry].minute/5 + 9];
+                  }
+              }
           }
-        }
-        for(let i = 0; i < 21; ++i)
-        {
-          newHistory.push({
-            pastCount: sums[i] / numElements[i],
-            hour: (i < 9) ? 11 : 12,
-            minute: (i*5) % 60,
-            meal: "lunch"
-          });
-        }
+          for(let i = 0; i < 21; ++i) {
+              newHistory.push({
+                  pastCount: sums[i] / numElements[i],
+                  hour: (i < 9) ? 11 : 12,
+                  minute: (i*5) % 60,
+                  meal: "lunch"
+              });
+          }
       });
-      return newHistory;
+    return newHistory;
     }
 
     // Similar code to pullBreakfastHistory()
@@ -212,27 +211,26 @@ export default class Home extends React.Component {
       const database = firebase.database();
       let newHistory = [];
       // CURRENTLY ONLY PULLS MONDAY DATA - FOR TESTING PURPOSES ONLY
-      database.ref('history').orderByChild("weekday").equalTo(1).on('value', (snapshot) => {
-        let hist = snapshot.val();
-        let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        for(let entry in hist) {
-          if(hist[entry].meal === "dinner") {
-            sums[((hist[entry].hour-17) * 12) + (hist[entry].minute/5)] += hist[entry].value;
-            ++numElements[((hist[entry].hour-17) * 12) + (hist[entry].minute/5)];
+      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
+          let hist = snapshot.val();
+          let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          for(let entry in hist) {
+              if(hist[entry].meal === "dinner") {
+                  sums[((hist[entry].hour-17) * 12) + (hist[entry].minute/5)] += hist[entry].value;
+                  ++numElements[((hist[entry].hour-17) * 12) + (hist[entry].minute/5)];
+              }
           }
-        }
-        for(let i = 0; i < 24; ++i)
-        {
-          newHistory.push({
-            pastCount: sums[i] / numElements[i],
-            hour: (i < 12) ? 17 : 18,
-            minute: (i*5) % 60,
-            meal: "dinner"
-          });
-        }
+          for(let i = 0; i < 24; ++i) {
+              newHistory.push({
+                  pastCount: sums[i] / numElements[i],
+                  hour: (i < 12) ? 17 : 18,
+                  minute: (i*5) % 60,
+                  meal: "dinner"
+              });
+          }
       });
-      return newHistory;
+    return newHistory;
     }
 
     loadHistory() {
@@ -248,7 +246,7 @@ export default class Home extends React.Component {
       *                 the values before putting it in the history
       * Current Limitations: Only looks at current hour, needs large history or is useless
       */
-      let newHistory;
+      let newHistory = [];
       newHistory = this.pullDinnerHistory();
       
       this.setState({
@@ -286,6 +284,7 @@ export default class Home extends React.Component {
           </header>
           <div className='container'>
             <section className='display-count'>
+                {/* This binds all buttons in the form section to call onSubmit as well */}
                 <form onSubmit={this.handleSubmit}>
                   <h3>The number of people in the Hoch is:</h3>
                   {/* loads the value of currentCount */}
