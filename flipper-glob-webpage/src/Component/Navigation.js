@@ -9,20 +9,13 @@ const Navigation = () => {
         <nav className = {'deep-purple darken-1'}>
             <div>
                 <ul>
-                    <section className = {'nav-Bar'}>
-                        <Link to = {'/'}>
-                            <button>
-                                <a className = {'white-text'}>Home</a>
-                            </button>
-                        </Link>
-                        
-                        {/* nbsp = non breaking space - for formating */}
-                        &nbsp;&nbsp;&nbsp;&nbsp;
-                        <Link to = {'/historyPage'}>
-                            <button>
-                                <a className = {'white-text'}>History</a>
-                                </button>
-                        </Link>
+                    <section className = {'button-Bar'}>
+                        <day><Link to = {'/'}>
+                            <button>Home</button>
+                        </Link></day>
+                        <day><Link to = {'/historyPage'}>
+                            <button>History</button>
+                        </Link></day>
                     </section>
                 </ul>
             </div>

@@ -216,16 +216,38 @@ render() {
                 <h1>Flipper Glob</h1>
                 </div>
             </header>
-            <div className = {'nav-wrapper'}>
+            <div>
             <ul>
-                <section className = {'nav-Bar'}>
-                    <button onClick={() => this.loadHistory(0, "brunch")}>Sunday</button>
-                    <button onClick={() => this.loadHistory(1, "breakfast")}>Monday</button>
-                    <button onClick={() => this.loadHistory(2, "breakfast")}>Tuesday</button>
-                    <button onClick={() => this.loadHistory(3, "breakfast")}>Wednesday</button>
-                    <button onClick={() => this.loadHistory(4, "breakfast")}>Thursday</button>
-                    <button onClick={() => this.loadHistory(5, "breakfast")}>Friday</button>
-                    <button onClick={() => this.loadHistory(6, "brunch")}>Saturday</button>
+                <section className = {'button-Bar'}>
+                    <li>
+                        <day><button onClick={() => this.loadHistory(0, "brunch")}>
+                                Sunday</button></day>
+                        <day><button onClick={() => this.loadHistory(1, "breakfast")}>
+                                Monday</button></day>
+                        <day><button onClick={() => this.loadHistory(2, "breakfast")}>
+                                Tuesday</button></day>
+                        <day><button onClick={() => this.loadHistory(3, "breakfast")}>
+                                Wednesday</button></day>
+                        <day><button onClick={() => this.loadHistory(4, "breakfast")}>
+                                Thursday</button></day>
+                        <day><button onClick={() => this.loadHistory(5, "breakfast")}>
+                                Friday</button></day>
+                        <day><button onClick={() => this.loadHistory(6, "brunch")}>
+                                Saturday</button></day>
+                    </li>
+                </section>
+            </ul>
+            <div>&nbsp;</div>
+            <ul>
+                <section className = {'button-Bar'}>
+                    <li>
+                        <meal><button onClick = {() => this.loadHistory(this.state.weekday, "breakfast")}>
+                                Breakfast</button></meal>
+                        <meal><button onClick = {() => this.loadHistory(this.state.weekday, "lunch")}>
+                                Lunch</button></meal>
+                        <meal><button onClick = {() => this.loadHistory(this.state.weekday, "dinner")}>
+                                Dinner</button></meal>
+                    </li>
                 </section>
             </ul>
         </div>
@@ -240,8 +262,9 @@ render() {
                     return (
                         <li>
                             <h4>Time: {element.hour === 12 ? 12: element.hour%12}:
-                                {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; 
-                                    Avg Pop: {Math.floor(element.pastCount)}
+                                {element.minute > 9 ? element.minute : '0'+element.minute} 
+                                &nbsp;&nbsp;&nbsp;&nbsp; 
+                                Avg Pop: {Math.floor(element.pastCount)}
                             </h4>
                         </li>
                     )   
