@@ -15,20 +15,25 @@ export default class HistoryPage extends React.Component {
         }
     }
 
+
     // called every second - will be used to log history
     tick() {
-        //this.loadHistory();
+        this.setState({
+            weekday: this.state.weekday,
+            meal: this.state.meal,
+            history: this.state.history
+        });
     }
     // Automatically called by React everytime a component is mounted (loaded)
     // on to the webpage
     // Needed to load values from firebase after the page has been loaded
     componentDidMount() {
         this.loadHistory(moment().weekday(), "brunch");
-        // // calls this.tick() every 1000 ms (every 1 second)
-        // // sets up the clock function
-        // this.intervalID = setInterval(() => this.tick(), 1000);
+        // calls this.tick() every 1000 ms (every 1 second)
+        // sets up the clock function
+        this.intervalID = setInterval(() => this.tick(), 1000);
     }
-      
+
     pullBreakfastHistory(day) {
         const database = firebase.database();
         let newHistory = [];
@@ -167,7 +172,6 @@ export default class HistoryPage extends React.Component {
     }
   
     loadHistory(n, s) {
-        console.log("loadHistory");
         // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
         // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
         // .orderByChild(" -- name of category -- ") sorts by that value 
@@ -189,15 +193,11 @@ export default class HistoryPage extends React.Component {
         else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
         
         this.setState({
-            weekday: day,
-            meal: meal,
             history: newHistory
         });
-        this.forceUpdate();
     }
 
     setMeal(n, s) {
-        console.log("setMeal " + s + " day: " + n);
         // setState() is the safer way to update state variables in js
         if((n !== 0 && n !== 6) && s === "brunch") {
             s = "breakfast";
@@ -205,7 +205,6 @@ export default class HistoryPage extends React.Component {
         else if((n === 0 || n === 6) && s === "breakfast") {
             s = "brunch";
         }
-        console.log("new s " + s + " day: " + n);
         return s;
     }
 
@@ -222,7 +221,7 @@ render() {
                 <section className = {'nav-Bar'}>
                     <button onClick={() => this.loadHistory(0, "brunch")}>Sunday</button>
                     <button onClick={() => this.loadHistory(1, "breakfast")}>Monday</button>
-                    <button onClick={() => this.loadHistory(2, "beakfast")}>Tuesday</button>
+                    <button onClick={() => this.loadHistory(2, "breakfast")}>Tuesday</button>
                     <button onClick={() => this.loadHistory(3, "breakfast")}>Wednesday</button>
                     <button onClick={() => this.loadHistory(4, "breakfast")}>Thursday</button>
                     <button onClick={() => this.loadHistory(5, "breakfast")}>Friday</button>

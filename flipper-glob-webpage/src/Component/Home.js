@@ -211,7 +211,7 @@ export default class Home extends React.Component {
       const database = firebase.database();
       let newHistory = [];
       // CURRENTLY ONLY PULLS MONDAY DATA - FOR TESTING PURPOSES ONLY
-      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(1/*this.state.time.day()*/).on('value', (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
