@@ -4,13 +4,13 @@ Feel free to add any comments about file descriptions, implementations, etc here
 GitHub does not upload the packages when pushing
 You must run the following lines before using yarn start to run the webpage
 
-npm install -g create-react-app
-yarn add firebase --dev
-npm install -g firebase-tools
-npm install react-router-dom      // this might not be needed
+yarn global add create-react-app
+yarn global add firebase --dev
 yarn global add firebase-tools
+yarn global add react-router-dom      // this might not be needed
 yarn global add moment
 yarn global add moment-timezone
+yarn global add react-chartjs // for the chart - wip
 
 ##########
 
