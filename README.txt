@@ -10,7 +10,7 @@ yarn global add firebase-tools
 yarn global add react-router-dom      // this might not be needed
 yarn global add moment
 yarn global add moment-timezone
-yarn global add react-chartjs // for the chart - wip
+yarn global add chart.js // for the chart - wip
 
 ##########
 

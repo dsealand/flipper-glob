@@ -4,9 +4,11 @@ import * as moment from 'moment';
 import * as timezone from 'moment-timezone';
 import firebase from '../firebase.js';
 
+import Chart from "chart.js";
+
 export default class HistoryPage extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
           history: [],
           // using moment library to set timezone to LA
@@ -15,9 +17,12 @@ export default class HistoryPage extends React.Component {
         }
     }
 
+    // Creating the base for the chart
+    chartRef = React.createRef();
 
     // called every second - will be used to log history
     tick() {
+        console.log(this.state.weekday);
         this.setState({
             weekday: this.state.weekday,
             meal: this.state.meal,
@@ -29,9 +34,28 @@ export default class HistoryPage extends React.Component {
     // Needed to load values from firebase after the page has been loaded
     componentDidMount() {
         this.loadHistory(moment().weekday(), "brunch");
-        // calls this.tick() every 1000 ms (every 1 second)
+        // calls this.tick() every 500 ms (every .5 second)
         // sets up the clock function
-        this.intervalID = setInterval(() => this.tick(), 1000);
+        this.intervalID = setInterval(() => this.tick(), 500);
+
+        const myChartRef = this.chartRef.current.getContext("2d");
+        
+        new Chart(myChartRef, {
+            type: "line",
+            data: {
+                //Bring in data
+                labels: ["Jan", "Feb", "March"],
+                datasets: [
+                    {
+                        label: "Sales",
+                        data: [86, 67, 91],
+                    }
+                ]
+            },
+            options: {
+                //Customize chart options
+            }
+        });
     }
 
     pullBreakfastHistory(day) {
@@ -193,6 +217,8 @@ export default class HistoryPage extends React.Component {
         else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
         
         this.setState({
+            weekday: day,
+            meal: meal,
             history: newHistory
         });
     }
@@ -250,6 +276,12 @@ render() {
                     </li>
                 </section>
             </ul>
+        </div>
+        <div>
+            <canvas
+                id="historyChart"
+                ref={this.chartRef}
+            />
         </div>
             <div className='container'>
             <section className='display-count'>
