@@ -8,7 +8,11 @@ import Test from './Component/Test'
 
 import './App.css';
 
-
+/*
+ * This is the app that is called when the program is run
+ * It currently only has a navigation bar and calls the other pages
+ * to display the desired information
+*/
 class App extends Component {
 
   render() {

@@ -6,10 +6,10 @@ import Test from './Test';
 
 const Navigation = () => {
     return (
-        <nav className = {'deep-purple darken-1'}>
+        <nav>
             <div>
                 <ul>
-                    <section className = {'button-Bar'}>
+                    <section className = 'button-Bar'> 
                         <day><Link to = {'/'}>
                             <button>Home</button>
                         </Link></day>

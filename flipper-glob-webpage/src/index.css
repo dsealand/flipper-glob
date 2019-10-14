@@ -35,6 +35,12 @@ header i {
   padding-top: 30px;
 }
 
+.small-container {
+  display: flex;
+  margin-top: 1%;
+  width: 75%;
+}
+
 .wrapper {
   max-width: 1100px;
   margin: 0 auto;
@@ -52,6 +58,18 @@ header i {
   margin-right: auto;
 }
 
+.display-day {
+  border-radius: 2px;
+  border-top: 3px solid #000000;
+  margin-right: 50px;
+  background-color: rgb(237, 237, 237);
+  padding: 60px 18px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.2);
+  margin-bottom: 34px;  
+  width: 15%;
+  margin-right: auto;
+}
+
 .display-history{
   border-radius: 2px;
   border-top: 3px solid #000000;
@@ -64,21 +82,17 @@ header i {
   margin-right: auto;
 }
 
-.display-item {
-  width: 65%;
-  margin-left: 50px;
+.display-meal {
+  border-radius: 2px;
+  border-top: 3px solid #000000;
+  background-color: rgb(237, 237, 237);
+  padding: 60px 18px;
+  box-shadow: 0 3px 4px 0 rgba(0,0,0,.14), 0 3px 3px -2px rgba(0,0,0,.12), 0 1px 8px 0 rgba(0,0,0,.2);
+  min-width: 15%;
+  height: 10%;
+  margin-left: 5%;
 }
 
-.display-item button {
-  margin-top: 20px;
-  margin-left: auto;
-  display: block;
-}
-
-.add-item form {
-  width: 100%;
-  overflow: hidden;
-}
 
 input {
   font-size: 22px;
@@ -121,10 +135,7 @@ h2 {
 
 .button-Bar {
   width: 100%;
-  height: 2%;
-  
-  /*background-color: rgb(237, 237, 237);
-  */
+  height: 0%;
 }
 
 day {
@@ -134,6 +145,7 @@ day {
 meal {
   margin-left: 15%;
 }
+
 
 li h3 {
   background-color: #000000;
@@ -154,16 +166,24 @@ form button {
 }
 
 button {
-  border-radius: 2px;
-  width: 10%;
-  height: 5%;
+  width: 12%;
+  height: 4%;
   background-color: rgb(225, 225, 2);
   cursor: pointer;
   border: 0;
-  width: 12%;
-  height: 5%;
   color: #fff;
   font-size: 1vw;
   padding: 10px 6px;
   box-shadow: 0 4px 4px 0 rgba(0,0,0,.14), 1px 10px 10px -2px rgba(0,0,0,.12), 2px 1px 1px 0 rgba(0,0,0,.2);
+}
+
+/* This is the invisible rectangle that is used to keep proper spacing */
+rect {
+  margin-left: 12%;
+}
+
+.graph {
+  width: 100%;
+  height: 100%;
+  margin-right: 10%;
 }
