@@ -1,18 +1,28 @@
 Feel free to add any comments about file descriptions, implementations, etc here
 
 ##### Note for running the code #####
-It may have downloaded the important packages locally and not uploaded them to github
-If yarn start does not work, try running the following lines
-npm install -g create-react-app
-yarn add firebase --dev
-npm install -g firebase-tools
+GitHub does not upload the packages when pushing
+You must run the following lines before using yarn start to run the webpage
+
+yarn global add create-react-app
+yarn global add firebase --dev
+yarn global add firebase-tools
+yarn global add react-router-dom      // this might not be needed
+yarn global add moment
+yarn global add moment-timezone
+yarn global add chart.js // for the chart - wip
 
 ##########
 
 ##### Note for Deploy Firebase Hosting #####
-Andreas needs to look into this more but google gave me the lines
 firebase login
+yarn build
 firebase init
+	Choose Hosting: Configure and deploy Firebase Hosting Sites
+	What do ou want to use as your public directory? build
+	Configure as a single-page app? Yes
+	File build/index.html already exists. Overwrite? No
+firebase use --add
+	name it whatever you want
 firebase deploy
-Seems like a good start
 ##########

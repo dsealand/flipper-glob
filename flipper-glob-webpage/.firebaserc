@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "flipper-glob-webpage"
+    "default": "flipper-glob-webpage",
+    "turnstile": "flipper-glob-webpage"
   }
 }
