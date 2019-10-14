@@ -268,10 +268,10 @@ render() {
     return (
         <div className='app'>
             <header>
-                <div className='wrapper'>
+              <div className='wrapper'>
                 <h1>Flipper Glob</h1>
-                </div>
-            </header>
+              </div>
+          </header>
             <div>
             <ul>
                 {/* Buttons that change the displayed day */}

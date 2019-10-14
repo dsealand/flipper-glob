@@ -4,6 +4,8 @@ import * as moment from 'moment';
 import * as timezone from 'moment-timezone';
 import firebase from '../firebase.js';
 
+import Chart from "chart.js";
+
 export default class Home extends React.Component {
     constructor() {
         super();
@@ -19,6 +21,9 @@ export default class Home extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     
+    // Creating the base for the chart
+    chartRef = React.createRef();
+
     // called every second - will be used to log history
     tick() {
       this.setState({
@@ -45,6 +50,62 @@ export default class Home extends React.Component {
       //   database.push(entry);
       // }
     }
+
+    // This is used to synchronize the state updates with the graph
+    // updates
+    updateState(day, meal, newHistory) {
+      // This works by calling letting setState() know that the call
+      // to updateGraph() depends on the state values, so it will ensure
+      // the values are synched before the function call
+      this.setState({
+          day: day,
+          meal: meal,
+          history: newHistory
+      }, () => this.updateGraph());
+  }
+
+  updateGraph() {
+      // Honestly don't know what this line does, but it makes it work
+      const myChartRef = this.chartRef.current.getContext("2d");
+      // Loading firebase data into local arrays for ease of access
+      var label = [];
+      var data = [];
+      this.state.history.forEach(function(elem) {
+          // formatting data
+          label.push((elem.hour===12 ? 12:elem.hour%12)+
+          ":" + (elem.minute > 9 ? elem.minute : '0'+elem.minute));
+          data.push(elem.pastCount);
+      });
+      new Chart(myChartRef, {
+          type: "line",
+          data: {
+              //Bring in data
+              labels: label,
+              datasets: [
+                  {
+                      // Set color to white with a darkness value of .35 (grey)
+                      backgroundColor: "rgba(0,0,0,.35)",
+                      data: data,
+                  }
+              ]
+          },
+          options: {
+              // hide title and other misc info
+              legend: {
+                  display: false
+              },
+              scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero: true,
+                          stepSize: 5
+                      }
+                  }]
+              }
+          }
+      });
+  }
+
     
     // These functions are called by the buttons
     handleIncrement() {
@@ -70,6 +131,19 @@ export default class Home extends React.Component {
       //updates existing item on firebase or creates new item if one does not exist
       itemsRef.update(item);
     }
+
+    // This is used to synchronize the state updates with the graph
+    // updates
+    updateState(day, meal, newHistory) {
+      // This works by calling letting setState() know that the call
+      // to updateGraph() depends on the state values, so it will ensure
+      // the values are synched before the function call
+      this.setState({
+          day: day,
+          meal: meal,
+          history: newHistory
+      }, () => this.updateGraph());
+  }
     
     // Automatically called by React everytime a component is mounted (loaded)
     // on to the webpage
@@ -89,18 +163,22 @@ export default class Home extends React.Component {
       this.intervalID = setInterval(() => this.tick(), 1000);
   
       // Reads from the database and updates this.state.history
-      this.loadHistory();
+      this.loadHistory(this.state.time.weekday, "brunch")
+
+      this.forceUpdate();
     }
     
-    pullBreakfastHistory() {
+    pullBreakfastHistory(day) {
+      // connects to firebase
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
+      // searches through database looking for entries with the day matching the current day
+      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           // Creates an array for each 5 minute interval over the 2 hours
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-          // Loops through every element that has the same day as today
+          // Loops through every element that has the same meal as the current meal
           for(let entry in hist) {
               if(hist[entry].meal === "breakfast") {
                   // Store entries into the array based on the time
@@ -126,25 +204,22 @@ export default class Home extends React.Component {
                   // Uses if statements to write the correct hour value
                   hour: (i < 6) ? 7 : (i < 18 ? 8 : 9),
                   minute: (i*5) % 60,
-                  meal: "breakfast"
               });
           }
       });
       return newHistory;
-    }
+  }
 
-    pullBrunchHistory() {
+  // Same implementation as pullBreakfastHistory
+  pullBrunchHistory(day) {
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
-          // Creates an array for each 5 minute interval over the 2 hours
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-          // Loops through every element that has the same day as today
           for(let entry in hist) {
               if(hist[entry].meal === "brunch") {
-                  // Store entries into the array based on the time
                   if(hist[entry].hour === 10) {
                   sums[(hist[entry].minute - 30) / 5] += hist[entry].value;
                   ++numElements[(hist[entry].minute - 30) / 5];
@@ -159,25 +234,23 @@ export default class Home extends React.Component {
                   }
               }
           }
-          // Push elements into the newHistory array which will be used to update the website
           for(let i = 0; i < 27; ++i)
           {
               newHistory.push({
                   pastCount: sums[i] / numElements[i],
-                  // Uses if statements to write the correct hour value
                   hour: (i < 6) ? 10 : (i < 18 ? 11 : 12),
                   minute: (30 + i*5) % 60,
-                  meal: "brunch"
               });
           }
       });
-    return newHistory;
-    }
+      return newHistory;
+  }
 
-    pullLunchHistory() {
+  // Same implenetation as pullBreakfastHistory
+  pullLunchHistory(day) {
       const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(this.state.time.day()).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           // Lunch is only open for 1.75 hours, so we can have a shorter array
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -199,19 +272,17 @@ export default class Home extends React.Component {
                   pastCount: sums[i] / numElements[i],
                   hour: (i < 9) ? 11 : 12,
                   minute: (i*5) % 60,
-                  meal: "lunch"
               });
           }
       });
-    return newHistory;
-    }
+      return newHistory;
+  }
 
-    // Similar code to pullBreakfastHistory()
-    pullDinnerHistory() {
+  // Same implenetation as pullBreakfastHistory
+  pullDinnerHistory(day) {
       const database = firebase.database();
       let newHistory = [];
-      // CURRENTLY ONLY PULLS MONDAY DATA - FOR TESTING PURPOSES ONLY
-      database.ref('history').orderByChild("weekday").equalTo(1/*this.state.time.day()*/).on('value', (snapshot) => {
+      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -226,33 +297,40 @@ export default class Home extends React.Component {
                   pastCount: sums[i] / numElements[i],
                   hour: (i < 12) ? 17 : 18,
                   minute: (i*5) % 60,
-                  meal: "dinner"
               });
           }
       });
-    return newHistory;
-    }
+      return newHistory;
+  }
 
-    loadHistory() {
-      // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
-      // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
-      // .orderByChild(" -- name of category -- ") sorts by that value 
-      // Note: we might need to create multiple of the following calls to parse the data
-      // It only allows one orderBy ise per function call
-      // Or we'll just have to be smart about our limitTo calls and include smart if statements
-      // Currently only pulls database values from the same weekday
-      /*
-      * Implementation: The following code pulls the history from previous days and averages
-      *                 the values before putting it in the history
-      * Current Limitations: Only looks at current hour, needs large history or is useless
-      */
-      let newHistory = [];
-      newHistory = this.pullDinnerHistory();
-      
-      this.setState({
-        history: newHistory
-      });
-    }
+  loadHistory(n, s) {
+    // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
+    // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
+    // .orderByChild(" -- name of category -- ") sorts by that value 
+    let newHistory = [];
+    // let day = n;
+    // let meal = this.setMeal(n, s);
+    // Hard coded values for testing purposes
+    let day = 1;
+    let meal = "dinner";
+    if(meal === "dinner") {newHistory = this.pullDinnerHistory(day);}
+    else if(meal === "lunch") {newHistory = this.pullLunchHistory(day);}
+    else if(meal === "breakfast") {newHistory = this.pullBreakfastHistory(day);}
+    else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
+    // Passes all information to one function that will handle the setState() update
+    // to minimize collisions with asynchronous updates
+    this.updateState(day, meal, newHistory);
+}
+
+    setMeal(n, s) {
+      if((n !== 0 && n !== 6) && s === "brunch") {
+          s = "breakfast";
+      }
+      else if((n === 0 || n === 6) && s === "breakfast") {
+          s = "brunch";
+      }
+      return s;
+  }
 
     getMeal() {
       if(this.state.time.day() === 0 || this.state.time.day() === 6)
@@ -298,22 +376,28 @@ export default class Home extends React.Component {
                   <button onClick={() => this.handleReset()}>Reset</button>
                 </form>
             </section>
-            <section className='display-history'>
-              <h1>History</h1>
-              {this.state.history.map((element) => {
-                return (
-                  <li key = {element.id}>
-                    {/* pulls from the history and displays it with style h4 (see App.css for format)*/
-                      /* the ? lines are used for formating the time */}
-                    <h4>Time: {element.hour === 12 ? 12: element.hour%12}:
-                        {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; Avg Pop: {Math.floor(element.pastCount)}
-                    </h4>
-                    </li>
-                )
-              })}
-            </section>
+            <div className = 'small-container'>
+              <canvas id="historyChart" ref={this.chartRef}/>
+            </div>
+            {/* List of history went here */}
           </div>
         </div>
       );
     }
 }
+
+// List of history code
+//  <section className='display-history'>
+//               <h1>History</h1>
+//               {this.state.history.map((element) => {
+//                 return (
+//                   <li key = {element.id}>
+//                     {/* pulls from the history and displays it with style h4 (see App.css for format)*/
+//                       /* the ? lines are used for formating the time */}
+//                     <h4>Time: {element.hour === 12 ? 12: element.hour%12}:
+//                         {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; Avg Pop: {Math.floor(element.pastCount)}
+//                     </h4>
+//                     </li>
+//                 )
+//               })}
+//             </section>
