@@ -30,8 +30,10 @@ time.sleep(2.0)
 
 # display video stream
 while True:
+    startTime = time.time()
     image = stream.read()
     image = imutils.resize(image, width=300)
+    getStreamTime = time.time()
     
     #image = cv2.imread(args["image"])
     (h, w) = image.shape[:2]
@@ -39,6 +41,8 @@ while True:
     
     net.setInput(blob)
     detections = net.forward()
+    
+    detectionsTime = time.time()
     
     # loop over the detections
     for detection in detections[0,0,:,:]:
@@ -57,8 +61,17 @@ while True:
 
             # display the prediction
             cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (23,230,210), 2)
-                    
+    
+    processTime = time.time()
+    
     cv2.imshow("frame", image)
+    printTime = time.time()
+    
+    print("stream time: ", getStreamTime - startTime)
+    print("detection time: ", detectionsTime - getStreamTime)
+    print("process time: ", processTime - detectionsTime)
+    print("print time: ", printTime - processTime)
+    
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
