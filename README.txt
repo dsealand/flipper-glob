@@ -9,11 +9,13 @@ First, set your directory to flipper-glob-webpage
 yarn global add create-react-app
 yarn global add firebase --dev
 yarn global add firebase-tools
-yarn global add react-router-dom      // this might not be needed
 yarn global add moment
 yarn global add moment-timezone
-yarn global add chart.js // for the chart - wip
+yarn global add chart.js
 
+
+yarn global add react-router-dom	// I don't remember why this line is here
+					// but I dont think it's necessary
 ##########
 
 ##### Note for Deploy Firebase Hosting #####
