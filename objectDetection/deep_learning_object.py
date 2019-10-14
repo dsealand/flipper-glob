@@ -20,7 +20,6 @@ args = vars(ap.parse_args())
 # define classification labels that MobileNet SSD was trained on
 CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable",
            "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
-COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
 
 # load model from files
 print("loading model")
@@ -43,29 +42,27 @@ while True:
     detections = net.forward()
     
     # loop over the detections
-    for i in np.arange(0, detections.shape[2]):
+    for detection in detections[0,0,:,:]:
         # extract the confidence (i.e., probability) associated with prediction
-        confidence = detections[0, 0, i, 2]
+        confidence = detection[2]
+        label = detection[1]
 
         # filter out weak detections by ensuring the `confidence` greater than the minimum confidence
-        if confidence > args["confidence"]:
-            # extract the index of the class label from the then compute the (x, y)-coordinates of the bounding box the object
-            idx = int(detections[0, 0, i, 1])
-            box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-            (startX, startY, endX, endY) = box.astype("int")
+        if confidence > args["confidence"] and label == 15:
+            # compute the (x, y)-coordinates of the bounding box the object
+            startX = detection[3] * w
+            startY = detection[4] * h
+            endX = detection[5] * w
+            endY = detection[6] * h
             centroid = ((endX - startX)/2, (endY - startY)/2)
 
             # display the prediction
-            label = "{}: {:.2f}%".format(CLASSES[idx], confidence * 100)
-            cv2.rectangle(image, (startX, startY), (endX, endY), COLORS[idx], 2)
-            y = startY - 15 if startY - 15 > 15 else startY + 15
-            cv2.putText(image, label, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-        
-        
+            cv2.rectangle(image, (int(startX), int(startY)), (int(endX), int(endY)), (23,230,210), 2)
+                    
     cv2.imshow("frame", image)
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
     
 cv2.destroyAllWindows()
-stream.stop()
+stream.stop()  
