@@ -164,8 +164,6 @@ export default class Home extends React.Component {
   
       // Reads from the database and updates this.state.history
       this.loadHistory(this.state.time.weekday, "brunch")
-
-      this.forceUpdate();
     }
     
     pullBreakfastHistory(day) {
