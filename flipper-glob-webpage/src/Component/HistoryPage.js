@@ -79,7 +79,6 @@ export default class HistoryPage extends React.Component {
     // on to the webpage
     // Needed to load values from firebase after the page has been loaded
     componentDidMount() {
-
         // For some reason this helps resolve the error of different pages
         // failing to load on each click. I think it has something to do with caching
         // the database values but I'm not sure
@@ -256,12 +255,12 @@ export default class HistoryPage extends React.Component {
     // Used to convert integer into a human readable day for the display
     getDay() {
         if(this.state.day === 0) return "Sunday";
-        if(this.state.day === 1) return "Monday";
-        if(this.state.day === 2) return "Tuesday";
-        if(this.state.day === 3) return "Wednesday";
-        if(this.state.day === 4) return "Thursday";
-        if(this.state.day === 5) return "Friday";
-        if(this.state.day === 6) return "Saturday";
+        else if(this.state.day === 1) return "Monday";
+        else if(this.state.day === 2) return "Tuesday";
+        else if(this.state.day === 3) return "Wednesday";
+        else if(this.state.day === 4) return "Thursday";
+        else if(this.state.day === 5) return "Friday";
+        else if(this.state.day === 6) return "Saturday";
     }
 
 render() {
