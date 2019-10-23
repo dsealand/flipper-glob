@@ -124,7 +124,7 @@ export default class HistoryPage extends React.Component {
                     pastCount: sums[i] / numElements[i],
                     // Uses if statements to write the correct hour value
                     hour: (i < 6) ? 7 : (i < 18 ? 8 : 9),
-                    minute: (i*5) % 60,
+                    minute: (i*5 + 30) % 60 ,
                 });
             }
         });
@@ -191,7 +191,7 @@ export default class HistoryPage extends React.Component {
             for(let i = 0; i < 21; ++i) {
                 newHistory.push({
                     pastCount: sums[i] / numElements[i],
-                    hour: (i < 9) ? 11 : 12,
+                    hour: (i < 12) ? 11 : 12,
                     minute: (i*5) % 60,
                 });
             }
