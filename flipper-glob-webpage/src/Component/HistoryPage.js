@@ -19,6 +19,7 @@ export default class HistoryPage extends React.Component {
 
     // Creating the base for the chart
     chartRef = React.createRef();
+    
 
     // This is used to synchronize the state updates with the graph
     // updates
@@ -67,7 +68,7 @@ export default class HistoryPage extends React.Component {
                     yAxes: [{
                         ticks: {
                             beginAtZero: true,
-                            stepSize: 5
+                            stepSize: 10
                         }
                     }]
                 }
@@ -87,6 +88,11 @@ export default class HistoryPage extends React.Component {
         });
 
         this.loadHistory(moment().weekday(), "brunch")
+
+        // Refreshes the graph after the data has been pulled from firebase
+        // IMPORTANT: This time is hard coded and may not be enough once 
+        // we have more values stored in the database!
+        setTimeout(() => this.updateGraph(), 500);
     }
 
     pullBreakfastHistory(day) {
@@ -271,7 +277,7 @@ render() {
                 <h1>Flipper Glob</h1>
               </div>
           </header>
-            <div>
+        <div>
             <ul>
                 {/* Buttons that change the displayed day */}
                 <section className = 'button-Bar'>
@@ -293,31 +299,29 @@ render() {
                     </li>
                 </section>
             </ul>
-            {/* Forcing a space in between the button bars */}
-            <div>&nbsp;</div>
             <ul>
                 {/* Buttons that change the displayed meal */}
                 <section className = 'button-Bar'>
                     <li>
                         {/* Display Brunch or Breakfast, depending on the day */}
-                        <meal><button onClick = {() => this.loadHistory(this.state.day, "breakfast")}>
+                        <breakfast><button className='meal' onClick = {() => this.loadHistory(this.state.day, "breakfast")}>
                                 {(this.state.day === 0 || this.state.day === 6) ? 
-                                    "Brunch":"Breakfast"}</button></meal>
+                                    "Brunch":"Breakfast"}</button></breakfast>
                         {/* Ugly workaround to keep the button spacing consistent. If the lunch button
                             is not displayed, it creates a white rectangle to fill the space */}
                         {(this.state.day === 0 || this.state.day === 6) 
-                            ? <meal><rect></rect></meal>
-                            : <meal><button onClick = {() => this.loadHistory(this.state.day, "lunch")}>
-                                Lunch</button></meal>}
-                        <meal><button onClick = {() => this.loadHistory(this.state.day, "dinner")}>
-                                Dinner</button></meal>
+                            ? <lunch><rect></rect></lunch>
+                            : <lunch><button className='meal' onClick = {() => this.loadHistory(this.state.day, "lunch")}>
+                                Lunch</button></lunch>}
+                        <dinner><button className='meal' onClick = {() => this.loadHistory(this.state.day, "dinner")}>
+                                Dinner</button></dinner>
                     </li>
                 </section>
             </ul>
         </div>
         {/* Keeps the chart and info box in one div element to keep them on the same line */}
         <div className = 'small-container'>
-            <canvas id="historyChart" ref={this.chartRef}/>
+            <canvas ref={this.chartRef}/>
             <section className='display-meal'>
                 <h1>{this.getDay()}</h1>
                 <h1>{this.state.meal.charAt(0).toUpperCase()}{this.state.meal.substring(1)}</h1>

@@ -28,8 +28,7 @@ export default class Home extends React.Component {
     tick() {
       this.setState({
         time: moment().tz('America/Los_Angeles')
-    });
-      
+      });
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
@@ -49,6 +48,32 @@ export default class Home extends React.Component {
       //   }
       //   database.push(entry);
       // }
+    }
+
+    // Automatically called by React everytime a component is mounted (loaded)
+    // on to the webpage
+    // Needed to load values from firebase after the page has been loaded
+    componentDidMount() {
+      // connects to the database
+      const database = firebase.database();
+  
+      // Loads the current database value into currentCount
+      // pulls data once from the section titled "count" and its child titled "value"
+      database.ref('count').once('value', (snapshot) => {
+        this.setState({ currentCount: snapshot.val().value });
+      });
+  
+      // calls this.tick() every 1000 ms (every 1 second)
+      // sets up the clock function
+      this.intervalID = setInterval(() => this.tick(), 1000);
+  
+      // Reads from the database and updates this.state.history
+      this.loadHistory(this.state.time.weekday, "brunch")
+
+      // Refreshes the graph after the data has been pulled from firebase
+      // IMPORTANT: This time is hard coded and may not be enough once 
+      // we have more values stored in the database!
+      setTimeout(() => this.updateGraph(), 500);
     }
 
     // This is used to synchronize the state updates with the graph
@@ -98,7 +123,7 @@ export default class Home extends React.Component {
                   yAxes: [{
                       ticks: {
                           beginAtZero: true,
-                          stepSize: 5
+                          stepSize: 10
                       }
                   }]
               }
@@ -144,27 +169,6 @@ export default class Home extends React.Component {
           history: newHistory
       }, () => this.updateGraph());
   }
-    
-    // Automatically called by React everytime a component is mounted (loaded)
-    // on to the webpage
-    // Needed to load values from firebase after the page has been loaded
-    componentDidMount() {
-      // connects to the database
-      const database = firebase.database();
-  
-      // Loads the current database value into currentCount
-      // pulls data once from the section titled "count" and its child titled "value"
-      database.ref('count').once('value', (snapshot) => {
-        this.setState({ currentCount: snapshot.val().value });
-      });
-  
-      // calls this.tick() every 1000 ms (every 1 second)
-      // sets up the clock function
-      this.intervalID = setInterval(() => this.tick(), 1000);
-  
-      // Reads from the database and updates this.state.history
-      this.loadHistory(this.state.time.weekday, "brunch")
-    }
     
     pullBreakfastHistory(day) {
       // connects to firebase
@@ -375,27 +379,10 @@ export default class Home extends React.Component {
                 </form>
             </section>
             <div className = 'small-container'>
-              <canvas id="historyChart" ref={this.chartRef}/>
+              <canvas ref={this.chartRef}/>
             </div>
-            {/* List of history went here */}
           </div>
         </div>
       );
     }
 }
-
-// List of history code
-//  <section className='display-history'>
-//               <h1>History</h1>
-//               {this.state.history.map((element) => {
-//                 return (
-//                   <li key = {element.id}>
-//                     {/* pulls from the history and displays it with style h4 (see App.css for format)*/
-//                       /* the ? lines are used for formating the time */}
-//                     <h4>Time: {element.hour === 12 ? 12: element.hour%12}:
-//                         {element.minute > 9 ? element.minute : '0'+element.minute} &nbsp;&nbsp;&nbsp;&nbsp; Avg Pop: {Math.floor(element.pastCount)}
-//                     </h4>
-//                     </li>
-//                 )
-//               })}
-//             </section>
