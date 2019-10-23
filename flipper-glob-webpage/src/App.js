@@ -5,6 +5,7 @@ import Home from './Component/Home';
 import About from './Component/HistoryPage';
 import Navigation from './Component/Navigation'
 import Test from './Component/Test'
+import firebase from './firebase.js';
 
 import './App.css';
 
@@ -14,7 +15,7 @@ import './App.css';
  * to display the desired information
 */
 class App extends Component {
-
+  
   render() {
     return (
       <div>

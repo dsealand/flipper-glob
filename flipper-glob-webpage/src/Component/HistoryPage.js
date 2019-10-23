@@ -7,18 +7,22 @@ import firebase from '../firebase.js';
 import Chart from "chart.js";
 
 export default class HistoryPage extends React.Component {
+    // Creating the base for the chart
+    chartRef = React.createRef();
+    database = firebase.database();
+    chart;
+
     constructor() {
         super();
         this.state = {
           history: [],
           // using moment library to set timezone to LA
           day: moment().weekday(),
-          meal: "brunch"
+          meal: "brunch",
+          updated: false
         }
     }
 
-    // Creating the base for the chart
-    chartRef = React.createRef();
     
 
     // This is used to synchronize the state updates with the graph
@@ -46,7 +50,10 @@ export default class HistoryPage extends React.Component {
             ":" + (elem.minute > 9 ? elem.minute : '0'+elem.minute));
             data.push(elem.pastCount);
         });
-        new Chart(myChartRef, {
+        if(this.chart) {
+            this.chart.destroy();
+        }
+        this.chart = new Chart(myChartRef, {
             type: "line",
             data: {
                 //Bring in data
@@ -60,10 +67,10 @@ export default class HistoryPage extends React.Component {
                 ]
             },
             options: {
+                // tooltips: {enabled: false},
+                // animation: {duration: 0},
                 // hide title and other misc info
-                legend: {
-                    display: false
-                },
+                legend: {display: false},
                 scales: {
                     yAxes: [{
                         ticks: {
@@ -76,6 +83,7 @@ export default class HistoryPage extends React.Component {
         });
     }
 
+
     // Automatically called by React everytime a component is mounted (loaded)
     // on to the webpage
     // Needed to load values from firebase after the page has been loaded
@@ -83,24 +91,20 @@ export default class HistoryPage extends React.Component {
         // For some reason this helps resolve the error of different pages
         // failing to load on each click. I think it has something to do with caching
         // the database values but I'm not sure
-        const database = firebase.database();
-        database.ref('history').on('value', (snapshot) => {
-        });
+        this.database.ref('history').on('value', () => {});
 
         this.loadHistory(moment().weekday(), "brunch")
 
         // Refreshes the graph after the data has been pulled from firebase
         // IMPORTANT: This time is hard coded and may not be enough once 
         // we have more values stored in the database!
-        setTimeout(() => this.updateGraph(), 500);
+        // setTimeout(() => this.updateGraph(), 500);
     }
 
     pullBreakfastHistory(day) {
-        // connects to firebase
-        const database = firebase.database();
         let newHistory = [];
         // searches through database looking for entries with the day matching the current day
-        database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
             let hist = snapshot.val();
             // Creates an array for each 5 minute interval over the 2 hours
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -139,9 +143,8 @@ export default class HistoryPage extends React.Component {
   
     // Same implementation as pullBreakfastHistory
     pullBrunchHistory(day) {
-        const database = firebase.database();
         let newHistory = [];
-        database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
             let hist = snapshot.val();
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -175,9 +178,8 @@ export default class HistoryPage extends React.Component {
   
     // Same implenetation as pullBreakfastHistory
     pullLunchHistory(day) {
-        const database = firebase.database();
         let newHistory = [];
-        database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
             let hist = snapshot.val();
             // Lunch is only open for 1.75 hours, so we can have a shorter array
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -207,9 +209,8 @@ export default class HistoryPage extends React.Component {
   
     // Same implenetation as pullBreakfastHistory
     pullDinnerHistory(day) {
-        const database = firebase.database();
         let newHistory = [];
-        database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
             let hist = snapshot.val();
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

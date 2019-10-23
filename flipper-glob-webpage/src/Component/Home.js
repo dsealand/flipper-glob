@@ -7,6 +7,10 @@ import firebase from '../firebase.js';
 import Chart from "chart.js";
 
 export default class Home extends React.Component {
+    // Creating the base for the chart
+    chartRef = React.createRef();
+    database = firebase.database();
+
     constructor() {
         super();
         this.state = {
@@ -14,21 +18,21 @@ export default class Home extends React.Component {
           currentCount: 0,
           history: [],
           // using moment library to set timezone to LA
-          time: moment().tz('America/Los_Angeles')
+          time: moment().tz('America/Los_Angeles'),
         }
         //binds the handleSubmit() function to all buttons with the appropriate <form>
         //tag in the render section
         this.handleSubmit = this.handleSubmit.bind(this);
     }
     
-    // Creating the base for the chart
-    chartRef = React.createRef();
+    
 
     // called every second - will be used to log history
     tick() {
       this.setState({
         time: moment().tz('America/Los_Angeles')
       });
+      
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
@@ -54,18 +58,15 @@ export default class Home extends React.Component {
     // on to the webpage
     // Needed to load values from firebase after the page has been loaded
     componentDidMount() {
-      // connects to the database
-      const database = firebase.database();
-  
       // Loads the current database value into currentCount
       // pulls data once from the section titled "count" and its child titled "value"
-      database.ref('count').once('value', (snapshot) => {
+      this.database.ref('count').once('value', (snapshot) => {
         this.setState({ currentCount: snapshot.val().value });
       });
   
       // calls this.tick() every 1000 ms (every 1 second)
       // sets up the clock function
-      this.intervalID = setInterval(() => this.tick(), 1000);
+      this.intervalID = setInterval(() => this.tick(), 500);
   
       // Reads from the database and updates this.state.history
       this.loadHistory(this.state.time.weekday, "brunch")
@@ -73,7 +74,13 @@ export default class Home extends React.Component {
       // Refreshes the graph after the data has been pulled from firebase
       // IMPORTANT: This time is hard coded and may not be enough once 
       // we have more values stored in the database!
-      setTimeout(() => this.updateGraph(), 500);
+      // This also causes errors when switching to other pages
+      // setTimeout(() => this.updateGraph(), 500);
+    }
+
+    componentWillUnmount() {
+      clearInterval(this.intervalID);
+      this.intervalID = null;
     }
 
     // This is used to synchronize the state updates with the graph
@@ -115,6 +122,9 @@ export default class Home extends React.Component {
               ]
           },
           options: {
+              // animation: {
+              //   duration: 0
+              // },
               // hide title and other misc info
               legend: {
                   display: false
@@ -149,7 +159,7 @@ export default class Home extends React.Component {
       //Stops the page from reloading every click
       e.preventDefault();
       //connects to firebase
-      const itemsRef = firebase.database().ref('count');
+      const itemsRef = this.database.ref('count');
       const item = {
         value: this.state.currentCount
       }
@@ -171,11 +181,9 @@ export default class Home extends React.Component {
   }
     
     pullBreakfastHistory(day) {
-      // connects to firebase
-      const database = firebase.database();
       let newHistory = [];
       // searches through database looking for entries with the day matching the current day
-      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           // Creates an array for each 5 minute interval over the 2 hours
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -214,9 +222,8 @@ export default class Home extends React.Component {
 
   // Same implementation as pullBreakfastHistory
   pullBrunchHistory(day) {
-      const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -250,9 +257,8 @@ export default class Home extends React.Component {
 
   // Same implenetation as pullBreakfastHistory
   pullLunchHistory(day) {
-      const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           // Lunch is only open for 1.75 hours, so we can have a shorter array
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -282,9 +288,8 @@ export default class Home extends React.Component {
 
   // Same implenetation as pullBreakfastHistory
   pullDinnerHistory(day) {
-      const database = firebase.database();
       let newHistory = [];
-      database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
