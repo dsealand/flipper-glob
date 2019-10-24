@@ -20,8 +20,6 @@ export default class HistoryPage extends React.Component {
         }
     }
 
-    
-
     // This is used to synchronize the state updates with the graph
     // updates
     updateState(day, meal, newHistory) {
@@ -64,8 +62,7 @@ export default class HistoryPage extends React.Component {
                 ]
             },
             options: {
-                // tooltips: {enabled: false},
-                // animation: {duration: 0},
+                animation: {duration: 0},
                 // hide title and other misc info
                 legend: {display: false},
                 scales: {
@@ -80,6 +77,9 @@ export default class HistoryPage extends React.Component {
         });
     }
 
+    tick() {
+        this.updateGraph();
+    }
 
     // Automatically called by React everytime a component is mounted (loaded)
     // on to the webpage
@@ -92,11 +92,19 @@ export default class HistoryPage extends React.Component {
 
         this.loadHistory(moment().weekday(), "brunch")
 
+        this.intervalID = setInterval(() => this.tick(), 500);
+
         // Refreshes the graph after the data has been pulled from firebase
         // IMPORTANT: This time is hard coded and may not be enough once 
         // we have more values stored in the database!
         // setTimeout(() => this.updateGraph(), 500);
     }
+
+    // Needed to remove error when navigating away from this page
+    componentWillUnmount() {
+        clearInterval(this.intervalID);
+        this.intervalID = null;
+      }
 
     pullBreakfastHistory(day) {
         let newHistory = [];

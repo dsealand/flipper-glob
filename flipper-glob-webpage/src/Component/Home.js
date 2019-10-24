@@ -45,6 +45,7 @@ export default class Home extends React.Component {
         this.updateHistory(this.state.time.day(), this.getMeal())
       }
       
+      this.updateGraph();
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
@@ -71,7 +72,7 @@ export default class Home extends React.Component {
         this.setState({ currentCount: snapshot.val().value });
       });
   
-      // calls this.tick() every 1000 ms (every 1 second)
+      // calls this.tick() every 500 ms (every .5 seconds)
       // sets up the clock function
       this.intervalID = setInterval(() => this.tick(), 500);
   
@@ -85,6 +86,7 @@ export default class Home extends React.Component {
       // setTimeout(() => this.updateGraph(), 500);
     }
 
+    // Needed to remove error when navigating away from this page
     componentWillUnmount() {
       clearInterval(this.intervalID);
       this.intervalID = null;
@@ -129,9 +131,7 @@ export default class Home extends React.Component {
               ]
           },
           options: {
-              // animation: {
-              //   duration: 0
-              // },
+              animation: {duration: 0},
               // hide title and other misc info
               legend: {
                   display: false
