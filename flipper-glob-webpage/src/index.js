@@ -5,9 +5,7 @@ import App from './App';
 //import registerserviceWorker from './registerServiceWorker';
 import * as serviceWorker from './serviceWorker';
 
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
-import Home from './Component/Home';
-import About from './Component/HistoryPage';
+import {BrowserRouter as Router} from 'react-router-dom';
 
 ReactDOM.render(<Router><App /></Router>, document.getElementById('root'));
 //registerserviceWorker();

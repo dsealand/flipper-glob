@@ -19,19 +19,31 @@ export default class Home extends React.Component {
           history: [],
           // using moment library to set timezone to LA
           time: moment().tz('America/Los_Angeles'),
+          // used only keep track of meal being displayed and update
+          // history when meal is changed
+          meal: "N/A"
         }
-        //binds the handleSubmit() function to all buttons with the appropriate <form>
-        //tag in the render section
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
     
     
 
     // called every second - will be used to log history
     tick() {
+      // Updates the clock every tick
       this.setState({
         time: moment().tz('America/Los_Angeles')
       });
+      
+      // Pulls the value from firebase every tick
+      this.database.ref('count').once('value', (snapshot) => {
+        this.setState({ currentCount: snapshot.val().value });
+      });
+      
+      // If the meal has changed, load info for the next meal
+      if(this.state.meal !== this.getMeal())
+      {
+        this.updateHistory(this.state.time.day(), this.getMeal())
+      }
       
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
@@ -44,13 +56,8 @@ export default class Home extends React.Component {
       //     // hour: this.state.time.hours(),
       //     // minute: this.state.time.minutes(),
       //     // meal: this.getMeal()
-      //     // value: this.state.currentCount,
-      //     // weekday: 0,
-      //     // hour: 12,
-      //     // minute: 45,
-      //     // meal: "brunch"
       //   }
-      //   database.push(entry);
+      //   if(meal !== "N/A") {database.push(entry);}
       // }
     }
 
@@ -69,7 +76,7 @@ export default class Home extends React.Component {
       this.intervalID = setInterval(() => this.tick(), 500);
   
       // Reads from the database and updates this.state.history
-      this.loadHistory(this.state.time.weekday, "brunch")
+      this.updateHistory(this.state.time.day(), this.getMeal())
 
       // Refreshes the graph after the data has been pulled from firebase
       // IMPORTANT: This time is hard coded and may not be enough once 
@@ -141,44 +148,14 @@ export default class Home extends React.Component {
       });
   }
 
-    
-    // These functions are called by the buttons
-    handleIncrement() {
-      this.setState({ currentCount: this.state.currentCount + 1 });
-    }
-  
-    handleDecrement() {
-      this.setState({ currentCount: this.state.currentCount - 1 });
-    }
-    
-    handleReset() {
-      this.setState({ currentCount: 0 });
-    }
-    
-    handleSubmit(e) {
-      //Stops the page from reloading every click
-      e.preventDefault();
-      //connects to firebase
+    resetCounter() {
       const itemsRef = this.database.ref('count');
       const item = {
-        value: this.state.currentCount
+        value: 0
       }
       //updates existing item on firebase or creates new item if one does not exist
       itemsRef.update(item);
     }
-
-    // This is used to synchronize the state updates with the graph
-    // updates
-    updateState(day, meal, newHistory) {
-      // This works by calling letting setState() know that the call
-      // to updateGraph() depends on the state values, so it will ensure
-      // the values are synched before the function call
-      this.setState({
-          day: day,
-          meal: meal,
-          history: newHistory
-      }, () => this.updateGraph());
-  }
     
     pullBreakfastHistory(day) {
       let newHistory = [];
@@ -310,20 +287,21 @@ export default class Home extends React.Component {
       return newHistory;
   }
 
-  loadHistory(n, s) {
+  updateHistory(n, s) {
     // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
     // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
     // .orderByChild(" -- name of category -- ") sorts by that value 
     let newHistory = [];
-    // let day = n;
-    // let meal = this.setMeal(n, s);
-    // Hard coded values for testing purposes
-    let day = 1;
-    let meal = "dinner";
+    let day = n;
+    let meal = this.setMeal(n, s);
+    // // Hard coded values for testing purposes
+    // let day = 1;
+    // let meal = "dinner";
     if(meal === "dinner") {newHistory = this.pullDinnerHistory(day);}
     else if(meal === "lunch") {newHistory = this.pullLunchHistory(day);}
     else if(meal === "breakfast") {newHistory = this.pullBreakfastHistory(day);}
     else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
+    else if(meal === "N/A") {this.resetCounter();}
     // Passes all information to one function that will handle the setState() update
     // to minimize collisions with asynchronous updates
     this.updateState(day, meal, newHistory);
@@ -342,21 +320,30 @@ export default class Home extends React.Component {
     getMeal() {
       if(this.state.time.day() === 0 || this.state.time.day() === 6)
       {
-        if(this.state.time.hours() < 13 && this.state.time.hours() > 10) {
+        if((this.state.time.hours() === 12 && this.state.time.minutes() <= 45) 
+          || (this.state.time.hours() === 10 && this.state.time.minutes >= 30)
+          || this.state.time.hours() === 11) {
           return "brunch";
         }
-        return "dinner";
+        else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
+          return "dinner";
+        }
+        return "N/A";
       }
-      else if (this.state.time.hours() < 10 && this.state.time.hours() > 7) {
+      else if ((this.state.time.hours() === 7 && this.state.time.minutes() >= 30)
+                || this.state.time.hours() === 8
+                || (this.state.time.hours() === 9 && this.state.time.munutes() <= 30)) {
         return "breakfast";
       }
-      else if (this.state.time.hours() < 13 && this.state.time.hours() > 11) {
+      else if ((this.state.time.hours() === 11 && this.state.time.minutes() >= 15)
+                || this.state.time.hours() === 12
+                || this.state.time.hours() === 1) {
         return "lunch";
       }
-      else if (this.state.time.hours() < 7 && this.state.time.hours() > 5) {
+      else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
         return "dinner";
       }
-      return "dinner";
+      return "N/A";
     }
     
     render() {
@@ -369,19 +356,11 @@ export default class Home extends React.Component {
           </header>
           <div className='container'>
             <section className='display-count'>
-                {/* This binds all buttons in the form section to call onSubmit as well */}
-                <form onSubmit={this.handleSubmit}>
-                  <h3>The number of people in the Hoch is:</h3>
-                  {/* loads the value of currentCount */}
-                  <h1>{this.state.currentCount}</h1>
-                  <h1>{this.state.time.toLocaleString()}</h1>
-                  <h1>{this.getMeal()}</h1>
-                  {/* Assigns a function to be called on the button press IN ADDITION
-                      to handleSubmit */}
-                  <button onClick={() => this.handleIncrement()}>Increment</button>
-                  <button onClick={() => this.handleDecrement()}>Decrement</button>
-                  <button onClick={() => this.handleReset()}>Reset</button>
-                </form>
+                <h3>The number of people in the Hoch is:</h3>
+                {/* loads the value of currentCount */}
+                <h1>{this.state.currentCount}</h1>
+                <h1>{this.state.time.toLocaleString()}</h1>
+                <h1>{this.getMeal()}</h1>
             </section>
             <div className = 'small-container'>
               <canvas ref={this.chartRef}/>

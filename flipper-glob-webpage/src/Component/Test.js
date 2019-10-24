@@ -1,17 +1,8 @@
 import React from 'react';
 
-import * as moment from 'moment';
-import * as timezone from 'moment-timezone';
-import firebase from '../firebase.js';
-
 import Chart from "chart.js";
 
 export default class Home extends React.Component {
-
-    constructor() {
-        super();
-    }
-    
     chartRef = React.createRef();
     
     componentDidMount() {

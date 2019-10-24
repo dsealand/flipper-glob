@@ -1,7 +1,6 @@
 import React from 'react';
 
 import * as moment from 'moment';
-import * as timezone from 'moment-timezone';
 import firebase from '../firebase.js';
 
 import Chart from "chart.js";
@@ -11,15 +10,13 @@ export default class HistoryPage extends React.Component {
     chartRef = React.createRef();
     database = firebase.database();
     chart;
-
     constructor() {
         super();
         this.state = {
           history: [],
           // using moment library to set timezone to LA
           day: moment().weekday(),
-          meal: "brunch",
-          updated: false
+          meal: "brunch"
         }
     }
 
@@ -88,9 +85,9 @@ export default class HistoryPage extends React.Component {
     // on to the webpage
     // Needed to load values from firebase after the page has been loaded
     componentDidMount() {
-        // For some reason this helps resolve the error of different pages
-        // failing to load on each click. I think it has something to do with caching
-        // the database values but I'm not sure
+        // From https://www.sitepoint.com/graph-data-with-firebase/
+        // This caches the data locally so it can be easily retrieved
+        // avoids error of not loading data on initial click
         this.database.ref('history').on('value', () => {});
 
         this.loadHistory(moment().weekday(), "brunch")

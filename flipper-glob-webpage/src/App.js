@@ -5,7 +5,6 @@ import Home from './Component/Home';
 import About from './Component/HistoryPage';
 import Navigation from './Component/Navigation'
 import Test from './Component/Test'
-import firebase from './firebase.js';
 
 import './App.css';
 
