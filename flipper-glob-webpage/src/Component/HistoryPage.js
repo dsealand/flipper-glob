@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import * as moment from 'moment';
-import firebase from '../firebase.js';
+import * as moment from "moment";
+import firebase from "../firebase.js";
 
 import Chart from "chart.js";
 
@@ -34,7 +34,7 @@ export default class HistoryPage extends React.Component {
     }
 
     updateGraph() {
-        // Honestly don't know what this line does, but it makes it work
+        // Honestly don"t know what this line does, but it makes it work
         const myChartRef = this.chartRef.current.getContext("2d");
         // Loading firebase data into local arrays for ease of access
         var label = [];
@@ -42,7 +42,7 @@ export default class HistoryPage extends React.Component {
         this.state.history.forEach(function(elem) {
             // formatting data
             label.push((elem.hour===12 ? 12:elem.hour%12)+
-            ":" + (elem.minute > 9 ? elem.minute : '0'+elem.minute));
+            ":" + (elem.minute > 9 ? elem.minute : "0"+elem.minute));
             data.push(elem.pastCount);
         });
         if(this.chart) {
@@ -88,7 +88,7 @@ export default class HistoryPage extends React.Component {
         // From https://www.sitepoint.com/graph-data-with-firebase/
         // This caches the data locally so it can be easily retrieved
         // avoids error of not loading data on initial click
-        this.database.ref('history').on('value', () => {});
+        this.database.ref("history").on("value", () => {});
 
         this.loadHistory(moment().weekday(), "brunch")
 
@@ -109,7 +109,7 @@ export default class HistoryPage extends React.Component {
     pullBreakfastHistory(day) {
         let newHistory = [];
         // searches through database looking for entries with the day matching the current day
-        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
             let hist = snapshot.val();
             // Creates an array for each 5 minute interval over the 2 hours
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -149,7 +149,7 @@ export default class HistoryPage extends React.Component {
     // Same implementation as pullBreakfastHistory
     pullBrunchHistory(day) {
         let newHistory = [];
-        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
             let hist = snapshot.val();
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -184,7 +184,7 @@ export default class HistoryPage extends React.Component {
     // Same implenetation as pullBreakfastHistory
     pullLunchHistory(day) {
         let newHistory = [];
-        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
             let hist = snapshot.val();
             // Lunch is only open for 1.75 hours, so we can have a shorter array
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -215,7 +215,7 @@ export default class HistoryPage extends React.Component {
     // Same implenetation as pullBreakfastHistory
     pullDinnerHistory(day) {
         let newHistory = [];
-        this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+        this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
             let hist = snapshot.val();
             let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -277,16 +277,16 @@ export default class HistoryPage extends React.Component {
 
 render() {
     return (
-        <div className='app'>
+        <div className="app">
             <header>
-              <div className='wrapper'>
+              <div className="wrapper">
                 <h1>Flipper Glob</h1>
               </div>
           </header>
         <div>
             <ul>
                 {/* Buttons that change the displayed day */}
-                <section className = 'button-Bar'>
+                <section className = "button-Bar">
                     <li>
                         <day><button onClick={() => this.loadHistory(0, "brunch")}>
                                 Sunday</button></day>
@@ -307,28 +307,28 @@ render() {
             </ul>
             <ul>
                 {/* Buttons that change the displayed meal */}
-                <section className = 'button-Bar'>
+                <section className = "button-Bar">
                     <li>
                         {/* Display Brunch or Breakfast, depending on the day */}
-                        <breakfast><button className='meal' onClick = {() => this.loadHistory(this.state.day, "breakfast")}>
+                        <breakfast><button className="meal" onClick = {() => this.loadHistory(this.state.day, "breakfast")}>
                                 {(this.state.day === 0 || this.state.day === 6) ? 
                                     "Brunch":"Breakfast"}</button></breakfast>
                         {/* Ugly workaround to keep the button spacing consistent. If the lunch button
                             is not displayed, it creates a white rectangle to fill the space */}
                         {(this.state.day === 0 || this.state.day === 6) 
                             ? <lunch><rect></rect></lunch>
-                            : <lunch><button className='meal' onClick = {() => this.loadHistory(this.state.day, "lunch")}>
+                            : <lunch><button className="meal" onClick = {() => this.loadHistory(this.state.day, "lunch")}>
                                 Lunch</button></lunch>}
-                        <dinner><button className='meal' onClick = {() => this.loadHistory(this.state.day, "dinner")}>
+                        <dinner><button className="meal" onClick = {() => this.loadHistory(this.state.day, "dinner")}>
                                 Dinner</button></dinner>
                     </li>
                 </section>
             </ul>
         </div>
         {/* Keeps the chart and info box in one div element to keep them on the same line */}
-        <div className = 'small-container'>
+        <div className = "small-container">
             <canvas ref={this.chartRef}/>
-            <section className='display-meal'>
+            <section className="display-meal">
                 <h1>{this.getDay()}</h1>
                 <h1>{this.state.meal.charAt(0).toUpperCase()}{this.state.meal.substring(1)}</h1>
             </section>

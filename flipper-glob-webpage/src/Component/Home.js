@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 
-import * as moment from 'moment';
-import * as timezone from 'moment-timezone';
-import firebase from '../firebase.js';
+import * as moment from "moment";
+import * as timezone from "moment-timezone";
+import firebase from "../firebase.js";
 
 import Chart from "chart.js";
 
@@ -18,7 +18,7 @@ export default class Home extends React.Component {
           currentCount: 0,
           history: [],
           // using moment library to set timezone to LA
-          time: moment().tz('America/Los_Angeles'),
+          time: moment().tz("America/Los_Angeles"),
           // used only keep track of meal being displayed and update
           // history when meal is changed
           meal: "N/A"
@@ -31,11 +31,11 @@ export default class Home extends React.Component {
     tick() {
       // Updates the clock every tick
       this.setState({
-        time: moment().tz('America/Los_Angeles')
+        time: moment().tz("America/Los_Angeles")
       });
       
       // Pulls the value from firebase every tick
-      this.database.ref('count').once('value', (snapshot) => {
+      this.database.ref("count").once("value", (snapshot) => {
         this.setState({ currentCount: snapshot.val().value });
       });
       
@@ -50,7 +50,7 @@ export default class Home extends React.Component {
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
       // {
-      //   const database = firebase.database().ref('history');
+      //   const database = firebase.database().ref("history");
       //   const entry = {
       //     // value: this.state.currentCount,
       //     // weekday: this.state.time.day(),
@@ -68,7 +68,7 @@ export default class Home extends React.Component {
     componentDidMount() {
       // Loads the current database value into currentCount
       // pulls data once from the section titled "count" and its child titled "value"
-      this.database.ref('count').once('value', (snapshot) => {
+      this.database.ref("count").once("value", (snapshot) => {
         this.setState({ currentCount: snapshot.val().value });
       });
   
@@ -106,7 +106,7 @@ export default class Home extends React.Component {
   }
 
   updateGraph() {
-      // Honestly don't know what this line does, but it makes it work
+      // Honestly don"t know what this line does, but it makes it work
       const myChartRef = this.chartRef.current.getContext("2d");
       // Loading firebase data into local arrays for ease of access
       var label = [];
@@ -114,7 +114,7 @@ export default class Home extends React.Component {
       this.state.history.forEach(function(elem) {
           // formatting data
           label.push((elem.hour===12 ? 12:elem.hour%12)+
-          ":" + (elem.minute > 9 ? elem.minute : '0'+elem.minute));
+          ":" + (elem.minute > 9 ? elem.minute : "0"+elem.minute));
           data.push(elem.pastCount);
       });
       new Chart(myChartRef, {
@@ -126,7 +126,7 @@ export default class Home extends React.Component {
                   {
                       // Set color to white with a darkness value of .35 (grey)
                       backgroundColor: "rgba(0,0,0,.35)",
-                      data: data,
+                      data: data
                   }
               ]
           },
@@ -149,7 +149,7 @@ export default class Home extends React.Component {
   }
 
     resetCounter() {
-      const itemsRef = this.database.ref('count');
+      const itemsRef = this.database.ref("count");
       const item = {
         value: 0
       }
@@ -160,7 +160,7 @@ export default class Home extends React.Component {
     pullBreakfastHistory(day) {
       let newHistory = [];
       // searches through database looking for entries with the day matching the current day
-      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
           let hist = snapshot.val();
           // Creates an array for each 5 minute interval over the 2 hours
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -200,7 +200,7 @@ export default class Home extends React.Component {
   // Same implementation as pullBreakfastHistory
   pullBrunchHistory(day) {
       let newHistory = [];
-      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -235,7 +235,7 @@ export default class Home extends React.Component {
   // Same implenetation as pullBreakfastHistory
   pullLunchHistory(day) {
       let newHistory = [];
-      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
           let hist = snapshot.val();
           // Lunch is only open for 1.75 hours, so we can have a shorter array
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -266,7 +266,7 @@ export default class Home extends React.Component {
   // Same implenetation as pullBreakfastHistory
   pullDinnerHistory(day) {
       let newHistory = [];
-      this.database.ref('history').orderByChild("weekday").equalTo(day).on('value', (snapshot) => {
+      this.database.ref("history").orderByChild("weekday").equalTo(day).on("value", (snapshot) => {
           let hist = snapshot.val();
           let sums = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
           let numElements = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -332,7 +332,7 @@ export default class Home extends React.Component {
       }
       else if ((this.state.time.hours() === 7 && this.state.time.minutes() >= 30)
                 || this.state.time.hours() === 8
-                || (this.state.time.hours() === 9 && this.state.time.munutes() <= 30)) {
+                || (this.state.time.hours() === 9 && this.state.time.minutes() <= 30)) {
         return "breakfast";
       }
       else if ((this.state.time.hours() === 11 && this.state.time.minutes() >= 15)
@@ -348,21 +348,21 @@ export default class Home extends React.Component {
     
     render() {
       return (
-        <div className='app'>
+        <div className="app">
           <header>
-              <div className='wrapper'>
+              <div className="wrapper">
                 <h1>Flipper Glob</h1>
               </div>
           </header>
-          <div className='container'>
-            <section className='display-count'>
+          <div className="container">
+            <section className="display-count">
                 <h3>The number of people in the Hoch is:</h3>
                 {/* loads the value of currentCount */}
                 <h1>{this.state.currentCount}</h1>
                 <h1>{this.state.time.toLocaleString()}</h1>
                 <h1>{this.getMeal()}</h1>
             </section>
-            <div className = 'small-container'>
+            <div className = "small-container">
               <canvas ref={this.chartRef}/>
             </div>
           </div>
