@@ -21,7 +21,7 @@ export default class Home extends React.Component {
           time: moment().tz("America/Los_Angeles"),
           // used only keep track of meal being displayed and update
           // history when meal is changed
-          meal: "N/A"
+          meal: "closed"
         }
     }
     
@@ -40,6 +40,7 @@ export default class Home extends React.Component {
       });
       
       // If the meal has changed, load info for the next meal
+      // Also handles reseting the counter to 0 during off hours
       if(this.state.meal !== this.getMeal())
       {
         this.updateHistory(this.state.time.day(), this.getMeal())
@@ -58,7 +59,7 @@ export default class Home extends React.Component {
       //     // minute: this.state.time.minutes(),
       //     // meal: this.getMeal()
       //   }
-      //   if(meal !== "N/A") {database.push(entry);}
+      //   if(meal !== "closed") {database.push(entry);}
       // }
     }
 
@@ -301,7 +302,7 @@ export default class Home extends React.Component {
     else if(meal === "lunch") {newHistory = this.pullLunchHistory(day);}
     else if(meal === "breakfast") {newHistory = this.pullBreakfastHistory(day);}
     else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
-    else if(meal === "N/A") {this.resetCounter();}
+    else if(meal === "closed") {this.resetCounter();}
     // Passes all information to one function that will handle the setState() update
     // to minimize collisions with asynchronous updates
     this.updateState(day, meal, newHistory);
@@ -328,7 +329,7 @@ export default class Home extends React.Component {
         else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
           return "dinner";
         }
-        return "N/A";
+        return "closed";
       }
       else if ((this.state.time.hours() === 7 && this.state.time.minutes() >= 30)
                 || this.state.time.hours() === 8
@@ -343,7 +344,7 @@ export default class Home extends React.Component {
       else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
         return "dinner";
       }
-      return "N/A";
+      return "closed";
     }
     
     render() {

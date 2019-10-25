@@ -48,6 +48,16 @@ export default class HistoryPage extends React.Component {
         if(this.chart) {
             this.chart.destroy();
         }
+
+        // reference: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/createLinearGradient
+        // Arguments: x0,y0,x1,y1 where 0 is start point and 1 is end point
+        // Creates gradient along line given by two coordinates
+        var fillPattern = myChartRef.createLinearGradient(0,50,0,300);
+        // reference: https://www.w3schools.com/tags/canvas_addcolorstop.asp
+        // integer is value that represents the position between start and end in gradient
+        fillPattern.addColorStop(.75, 'green');
+        fillPattern.addColorStop(.5, 'yellow');
+        fillPattern.addColorStop(.1, 'red');
         this.chart = new Chart(myChartRef, {
             type: "line",
             data: {
@@ -56,8 +66,9 @@ export default class HistoryPage extends React.Component {
                 datasets: [
                     {
                         // Set color to white with a darkness value of .35 (grey)
-                        backgroundColor: "rgba(0,0,0,.35)",
-                        data: data,
+                        // backgroundColor: "rgba(0,0,0,.35)",
+                        backgroundColor: fillPattern,
+                        data: data
                     }
                 ]
             },
