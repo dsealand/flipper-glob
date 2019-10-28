@@ -13,8 +13,8 @@ const Navigation = () => {
                         <day><Link to = {'/historyPage'}>
                             <button>History</button>
                         </Link></day>
-                        <day><Link to = {'/Test'}>
-                            <button>Test</button>
+                        <day><Link to = {'/About'}>
+                            <button>About</button>
                         </Link></day>
                     </section>
                 </ul>

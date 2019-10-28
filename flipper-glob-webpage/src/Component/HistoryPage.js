@@ -291,7 +291,7 @@ render() {
         <div className="app">
             <header>
               <div className="wrapper">
-                <h1>Flipper Glob</h1>
+                <h1>Turnstile</h1>
               </div>
           </header>
         <div>

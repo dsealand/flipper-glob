@@ -21,13 +21,13 @@ export default class Home extends React.Component {
           time: moment().tz("America/Los_Angeles"),
           // used only keep track of meal being displayed and update
           // history when meal is changed
-          meal: "closed"
+          meal: "Closed"
         }
     }
     
     
 
-    // called every second - will be used to log history
+    // called every second 
     tick() {
       // Updates the clock every tick
       this.setState({
@@ -47,6 +47,7 @@ export default class Home extends React.Component {
       }
       
       this.updateGraph();
+      
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
@@ -59,7 +60,7 @@ export default class Home extends React.Component {
       //     // minute: this.state.time.minutes(),
       //     // meal: this.getMeal()
       //   }
-      //   if(meal !== "closed") {database.push(entry);}
+      //   if(meal !== "Closed") {database.push(entry);}
       // }
     }
 
@@ -79,12 +80,6 @@ export default class Home extends React.Component {
   
       // Reads from the database and updates this.state.history
       this.updateHistory(this.state.time.day(), this.getMeal())
-
-      // Refreshes the graph after the data has been pulled from firebase
-      // IMPORTANT: This time is hard coded and may not be enough once 
-      // we have more values stored in the database!
-      // This also causes errors when switching to other pages
-      // setTimeout(() => this.updateGraph(), 500);
     }
 
     // Needed to remove error when navigating away from this page
@@ -106,6 +101,7 @@ export default class Home extends React.Component {
       }, () => this.updateGraph());
   }
 
+  // Creates a graph using chart.js and populates it with information from this.state.history
   updateGraph() {
       // Honestly don"t know what this line does, but it makes it work
       const myChartRef = this.chartRef.current.getContext("2d");
@@ -149,6 +145,8 @@ export default class Home extends React.Component {
       });
   }
 
+    // Resets the firebase value to 0
+    // Called when the hoch is closed
     resetCounter() {
       const itemsRef = this.database.ref("count");
       const item = {
@@ -288,6 +286,8 @@ export default class Home extends React.Component {
       return newHistory;
   }
 
+  // Calls method corresponding to meal, then passes information to updateState
+  // to change all information in one setState call
   updateHistory(n, s) {
     // helpful site https://firebase.google.com/docs/database/admin/retrieve-data
     // .limitToFirst(n)  or .limitToLast(n)- only chooses certain n values
@@ -302,12 +302,13 @@ export default class Home extends React.Component {
     else if(meal === "lunch") {newHistory = this.pullLunchHistory(day);}
     else if(meal === "breakfast") {newHistory = this.pullBreakfastHistory(day);}
     else if(meal === "brunch") {newHistory = this.pullBrunchHistory(day);}
-    else if(meal === "closed") {this.resetCounter();}
+    else if(meal === "Closed") {this.resetCounter();}
     // Passes all information to one function that will handle the setState() update
     // to minimize collisions with asynchronous updates
     this.updateState(day, meal, newHistory);
 }
 
+    // Handles meal differences on the weekend
     setMeal(n, s) {
       if((n !== 0 && n !== 6) && s === "brunch") {
           s = "breakfast";
@@ -318,6 +319,8 @@ export default class Home extends React.Component {
       return s;
   }
 
+    // Uses day and time info to return a string corresponding to the current meal
+    // returns Closed as default
     getMeal() {
       if(this.state.time.day() === 0 || this.state.time.day() === 6)
       {
@@ -326,10 +329,10 @@ export default class Home extends React.Component {
           || this.state.time.hours() === 11) {
           return "brunch";
         }
-        else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
+        else if (this.state.time.hours() <= 19 && this.state.time.hours() >= 17) {
           return "dinner";
         }
-        return "closed";
+        return "Closed";
       }
       else if ((this.state.time.hours() === 7 && this.state.time.minutes() >= 30)
                 || this.state.time.hours() === 8
@@ -338,13 +341,13 @@ export default class Home extends React.Component {
       }
       else if ((this.state.time.hours() === 11 && this.state.time.minutes() >= 15)
                 || this.state.time.hours() === 12
-                || this.state.time.hours() === 1) {
+                || this.state.time.hours() === 13) {
         return "lunch";
       }
-      else if (this.state.time.hours() <= 7 && this.state.time.hours() >= 5) {
+      else if (this.state.time.hours() <= 19 && this.state.time.hours() >= 17) {
         return "dinner";
       }
-      return "closed";
+      return "Closed";
     }
     
     render() {
@@ -352,7 +355,7 @@ export default class Home extends React.Component {
         <div className="app">
           <header>
               <div className="wrapper">
-                <h1>Flipper Glob</h1>
+                <h1>Turnstile</h1>
               </div>
           </header>
           <div className="container">
