@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {Route} from 'react-router-dom'
 
 import Home from './Component/Home';
@@ -13,7 +13,7 @@ import './App.css';
  * It currently only has a navigation bar and calls the other pages
  * to display the desired information
 */
-class App extends Component {
+class App extends React.Component {
   
   render() {
     return (

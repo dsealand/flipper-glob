@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as moment from "moment";
-import * as timezone from "moment-timezone";
+import "moment-timezone";
 import firebase from "../firebase.js";
 
 import Chart from "chart.js";
@@ -21,13 +21,15 @@ export default class Home extends React.Component {
           time: moment().tz("America/Los_Angeles"),
           // used only keep track of meal being displayed and update
           // history when meal is changed
-          meal: "Closed"
+          meal: "Closed",
+          // should we push the values to the firebase history
+          shouldLogData: false
         }
     }
     
     
 
-    // called every second 
+    // called every second - will be used to log history
     tick() {
       // Updates the clock every tick
       this.setState({
@@ -36,7 +38,10 @@ export default class Home extends React.Component {
       
       // Pulls the value from firebase every tick
       this.database.ref("count").once("value", (snapshot) => {
-        this.setState({ currentCount: snapshot.val().value });
+        this.setState({ 
+          currentCount: snapshot.val().value,
+          shouldLogData: snapshot.val().shouldLogData
+        });
       });
       
       // If the meal has changed, load info for the next meal
@@ -47,7 +52,6 @@ export default class Home extends React.Component {
       }
       
       this.updateGraph();
-      
       // // Every minute, create a new object and push it to the database
       // // Stores only every 5 minute interval into the database
       // if(this.state.time.seconds() % 5 === 0 /*&& this.state.time.minutes % 5 === 0*/)
@@ -60,7 +64,7 @@ export default class Home extends React.Component {
       //     // minute: this.state.time.minutes(),
       //     // meal: this.getMeal()
       //   }
-      //   if(meal !== "Closed") {database.push(entry);}
+      //   if(meal !== "Closed" && this.state.shouldLogData === true) {database.ref("history").push(entry);}
       // }
     }
 
@@ -71,7 +75,10 @@ export default class Home extends React.Component {
       // Loads the current database value into currentCount
       // pulls data once from the section titled "count" and its child titled "value"
       this.database.ref("count").once("value", (snapshot) => {
-        this.setState({ currentCount: snapshot.val().value });
+        this.setState({ 
+          currentCount: snapshot.val().value ,
+          shouldLogData: snapshot.val().shouldLogData
+        });
       });
   
       // calls this.tick() every 500 ms (every .5 seconds)
