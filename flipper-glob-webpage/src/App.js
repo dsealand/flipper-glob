@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {Route} from 'react-router-dom'
 
 import Home from './Component/Home';
-import About from './Component/HistoryPage';
+import historyPage from './Component/HistoryPage';
 import Navigation from './Component/Navigation'
-import Test from './Component/Test'
+import About from './Component/About'
 
 import './App.css';
 
@@ -13,8 +13,8 @@ import './App.css';
  * It currently only has a navigation bar and calls the other pages
  * to display the desired information
 */
-class App extends Component {
-
+class App extends React.Component {
+  
   render() {
     return (
       <div>
@@ -23,8 +23,8 @@ class App extends Component {
 
         }
         <Route exact = {true} path = {'/'} component = {Home} />
-        <Route exact = {true} path = {'/historyPage'} component = {About} />
-        <Route exact = {true} path = {'/Test'} component = {Test} />
+        <Route exact = {true} path = {'/historyPage'} component = {historyPage} />
+        <Route exact = {true} path = {'/About'} component = {About} />
       </div>
     );
   }
