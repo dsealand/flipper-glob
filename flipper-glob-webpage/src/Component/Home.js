@@ -152,16 +152,17 @@ export default class Home extends React.Component {
       });
   }
 
-    // Resets the firebase value to 0
-    // Called when the hoch is closed
-    resetCounter() {
-      const itemsRef = this.database.ref("count");
-      const item = {
-        value: 0
-      }
-      //updates existing item on firebase or creates new item if one does not exist
-      itemsRef.update(item);
-    }
+    // Functionality should be pushed to the board
+    // // Resets the firebase value to 0
+    // // Called when the hoch is closed
+    // resetCounter() {
+    //   const itemsRef = this.database.ref("count");
+    //   const item = {
+    //     value: 0
+    //   }
+    //   //updates existing item on firebase or creates new item if one does not exist
+    //   itemsRef.update(item);
+    // }
     
     pullBreakfastHistory(day) {
       let newHistory = [];
@@ -348,7 +349,7 @@ export default class Home extends React.Component {
       }
       else if ((this.state.time.hours() === 11 && this.state.time.minutes() >= 15)
                 || this.state.time.hours() === 12
-                || this.state.time.hours() === 13) {
+                || (this.state.time.hours() === 13 && this.state.time.minutes() <= 15) {
         return "lunch";
       }
       else if (this.state.time.hours() <= 19 && this.state.time.hours() >= 17) {
